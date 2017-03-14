@@ -33,6 +33,7 @@ def home_view(request):
     return {
         'google_client_id': os.environ['GOOGLE_CLIENT_ID'],
         'pusher_key': os.environ['PUSHER_KEY']
+        'google_captcha_id': os.environ['GOOGLE_CAPTCHA_ID']
     }
 
 @view_config(route_name='upload_spreadsheet', request_method='POST', renderer='json')

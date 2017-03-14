@@ -22,12 +22,14 @@
                 margin-right: 0.25rem;
             }
         </style>
+        <script src='https://www.google.com/recaptcha/api.js'></script>
     </head>
     <body>
         {# expose token to client JS so it can be used in XHR requests #}
         <script type="text/javascript">
             window.CSRF_TOKEN = '{{ request.session.get_csrf_token() }}';
             window.PUSHER_KEY = '{{ pusher_key }}';
+            window.googleCaptchaId = '{{ google_captcha_id }}';
         </script>
         <div id="j-application"></div>
         <script src="https://js.pusher.com/4.0/pusher.min.js"></script>
