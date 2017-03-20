@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 
+import ColleagueFormShow from '../../components/colleagues/colleagueFormShow';
+
 class Colleagues extends Component {
   render() {
     return (
       <div>
-        <h1>Colleagues</h1>
+        <ColleagueFormShow
+          isReadOnly isCurator={false} 
+        />
       </div>
     );
   }

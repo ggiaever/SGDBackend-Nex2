@@ -4,7 +4,7 @@ import { IndexRoute, Route  } from 'react-router';
 // public routes and layout
 import Layout from './containers/layout';
 import PublicHome from './containers/publicHome';
-import Colleagues from './containers/Colleagues';
+import NewColleague from './containers/colleagues/new';
 import Help from './containers/help';
 import Login from './containers/login';
 // authenticated curate inputs
@@ -49,6 +49,6 @@ export default (
       </Route>
       <Route component={requireAuthentication(AuthorResponse)} path='author_response' />
     </Route>
-    <Route component={Colleagues} path='new_colleague' />
+    <Route component={NewColleague} path='new_colleague' />
   </Route>
 );
