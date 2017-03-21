@@ -21,28 +21,15 @@ const USER_COLLEAGUE_UPDATE_URL = '/backend/colleagues';
 const CURATOR_COLLEAGUE_UPDATE_URL = TRIAGED_COLLEAGUE_URL;
 
 class ColleaguesFormShow extends Component {
-  getInitialState () {
-    return {
+  constructor(props) {
+    super(props);
+    this.state = {
       data: {},
       isLoadPending: false, // loading existing data
       isUpdatePending: false, // sending update to server
       isComplete: false,
       error: null
     };
-  }
-
-  render () {
-    if (this.state.isComplete) return this._renderCompleteNode();
-    let formLabel = this.props.isUpdate ? 'Update Colleague' : 'New Colleague';
-    let showLabel = this.state.isLoadPending ? '...' : `${this.state.data.first_name} ${this.state.data.last_name}`;
-    let label = this.props.isReadOnly ? showLabel : formLabel;
-    return (
-      <div>
-        <h1>{label}</h1>
-        {this._renderTriageNode()}
-        {this._renderForm()}
-      </div>
-    );
   }
 
   componentDidMount () {
@@ -54,8 +41,8 @@ class ColleaguesFormShow extends Component {
     if (!this.props.isTriage || !this.props.isCurator) return null;
     return (
       <div className='button-group' style={[style.controlContainer]}>
-        <a onClick={onApprove} className='button small' style={[style.controlButton]}><i className='fa fa-check'/> Approve Update</a>
-        <Link to='/curate/colleagues' className='button small secondary' style={[style.controlButton]}><i className='fa fa-times'/> Cancel Update</Link>
+        <a onClick={onApprove} className='button small' style={[style.controlButton]}><i className='fa fa-check' /> Approve Update</a>
+        <Link to='/curate/colleagues' className='button small secondary' style={[style.controlButton]}><i className='fa fa-times' /> Cancel Update</Link>
       </div>
     );
   }
@@ -73,14 +60,14 @@ class ColleaguesFormShow extends Component {
     return (
       <div style={[style.container]}>
         {this._renderError()}
-        <form ref='form' onSubmit={this._submitData}>
+        <form ref='form' onSubmit={this.handleSubmitData}>
           <div className='row'>
             <div className='column small-12'>
               {this._renderName()}
               <StringField isReadOnly={this.props.isReadOnly} displayName='Email' paramName='email' defaultValue={data.email} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Position' paramName='position' defaultValue={data.position} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Profession' paramName='profession' defaultValue={data.profession} />
-              <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Institution' paramName='institution' defaultValue={data.institution} optionsUrl={INSTITUTION_URL} isMulti={false} allowCreate={true} />
+              <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Institution' paramName='institution' defaultValue={data.institution} optionsUrl={INSTITUTION_URL} isMulti={false} allowCreate />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Work Phone' paramName='work_phone' defaultValue={data.work_phone} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Other Phone' paramName='other_phone' defaultValue={data.other_phone} />
               {this._renderAddress()}
@@ -104,10 +91,10 @@ class ColleaguesFormShow extends Component {
     let data = this.state.data;
     if (this.props.isReadOnly) {
       return [
-        <StringField isReadOnly={this.props.isReadOnly} displayName='First Name' paramName='first_name' defaultValue={data.first_name} key='name0'/>,
-        <StringField isReadOnly={this.props.isReadOnly} displayName='Middle Name' paramName='middle_name' defaultValue={data.middle_name} key='name1'/>,
-        <StringField isReadOnly={this.props.isReadOnly} displayName='Last Name' paramName='last_name' defaultValue={data.last_name} key='name2'/>,
-        <StringField isReadOnly={this.props.isReadOnly} displayName='Suffix' paramName='suffix' defaultValue={data.suffix} key='name3'/>
+        <StringField isReadOnly={this.props.isReadOnly} displayName='First Name' paramName='first_name' defaultValue={data.first_name} key='name0' />,
+        <StringField isReadOnly={this.props.isReadOnly} displayName='Middle Name' paramName='middle_name' defaultValue={data.middle_name} key='name1' />,
+        <StringField isReadOnly={this.props.isReadOnly} displayName='Last Name' paramName='last_name' defaultValue={data.last_name} key='name2' />,
+        <StringField isReadOnly={this.props.isReadOnly} displayName='Suffix' paramName='suffix' defaultValue={data.suffix} key='name3' />
       ];
     }
     return (
@@ -159,21 +146,21 @@ class ColleaguesFormShow extends Component {
   _renderAssociates () {
     let supervisors = this.state.data.supervisors || [];
     let labMembers = this.state.data.lab_members || [];
-    let _formatLink = d => { return `/colleague/${d.format_name}/overview`; }
+    let _formatLink = d => { return `/colleague/${d.format_name}/overview`; };
     return [
       <MultiSelectField
         isReadOnly={this.props.isReadOnly} displayName='Supervisor(s)'
         paramName='supervisors' optionsUrl={COLLEAGUES_AUTOCOMPLETE_URL}
         defaultValues={supervisors} defaultOptions={supervisors}
-        allowCreate={true} key='associate0'
-        isLinks={true} formatLink={_formatLink}
+        allowCreate key='associate0'
+        isLinks formatLink={_formatLink}
       />,
       <MultiSelectField
         isReadOnly={this.props.isReadOnly} displayName='Lab Members'
         paramName='lab_members' optionsUrl={COLLEAGUES_AUTOCOMPLETE_URL}
         defaultValues={labMembers} defaultOptions={labMembers}
-        allowCreate={true} key='associate1'
-        isLinks={true} formatLink={_formatLink}
+        allowCreate key='associate1'
+        isLinks formatLink={_formatLink}
       />
     ];
   }
@@ -193,7 +180,7 @@ class ColleaguesFormShow extends Component {
 
   _renderGenes () {
     let data = this.state.data.associated_genes || [];
-    return <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Associated Genes' paramName='associated_gene_ids' optionsUrl={GENES_URL} defaultValues={data} defaultOptions={data}/>;
+    return <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Associated Genes' paramName='associated_gene_ids' optionsUrl={GENES_URL} defaultValues={data} defaultOptions={data} />;
   }
 
   _renderComments () {
@@ -240,7 +227,7 @@ class ColleaguesFormShow extends Component {
     let saveIconNode = this.state.isUpdatePending ? null : <span><i className='fa fa-upload' /> </span>;
     let _onClick = e => {
       e.preventDefault();
-      this._submitData();
+      this.handleSubmitData();
     };
     return (
       <div>
@@ -262,7 +249,7 @@ class ColleaguesFormShow extends Component {
   // },
 
   // saves form data to server, if new makes POST
-  _submitData (e) {
+  handleSubmitData (e) {
     if (e) e.preventDefault();
     let _data = new FormData(this.refs.form);
     let _method = this.props.isUpdate ? 'PUT' : 'POST';
@@ -276,7 +263,7 @@ class ColleaguesFormShow extends Component {
       data: _data,
       method: _method
     };
-    fetchData(url, options).then( response => {
+    fetchData(url, options).then( () => {
       // is complete
       this.setState({ error: null });
       // let curator redirect to index
@@ -298,13 +285,28 @@ class ColleaguesFormShow extends Component {
       </div>
     );
   }
+
+  render () {
+    if (this.state.isComplete) return this._renderCompleteNode();
+    let formLabel = this.props.isUpdate ? 'Update Colleague' : 'New Colleague';
+    let showLabel = this.state.isLoadPending ? '...' : `${this.state.data.first_name} ${this.state.data.last_name}`;
+    let label = this.props.isReadOnly ? showLabel : formLabel;
+    return (
+      <div>
+        <h1>{label}</h1>
+        {this._renderTriageNode()}
+        {this._renderForm()}
+      </div>
+    );
+  }
 }
 
 ColleaguesFormShow.propTypes = {
+  colleagueDisplayName: React.PropTypes.string,
+  dispatch: React.PropTypes.func,
   isReadOnly: React.PropTypes.bool,
   isCurator: React.PropTypes.bool,
   isUpdate: React.PropTypes.bool,
-  colleagueDisplayName: React.PropTypes.string,
   isTriage: React.PropTypes.bool
 };
 
@@ -320,7 +322,7 @@ const style = {
   }
 };
 
-function mapStateToProps(_state) {
+function mapStateToProps() {
   return {
   };
 }
