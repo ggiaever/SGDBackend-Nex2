@@ -6,6 +6,7 @@ import Layout from './containers/layout';
 import PublicLayout from './containers/layout/PublicLayout';
 import PublicHome from './containers/publicHome';
 import NewColleague from './containers/colleagues/new';
+import NewGeneNameReservation from './containers/reservation/new';
 import Help from './containers/help';
 import Login from './containers/login';
 // authenticated curate inputs
@@ -52,6 +53,7 @@ export default (
     </Route>
     <Route component={PublicLayout}>
       <Route component={NewColleague} path='new_colleague' />
+      <Route component={NewGeneNameReservation} path='new_reservation' />
     </Route>
   </Route>
 );

@@ -294,7 +294,11 @@ class ColleaguesFormShow extends Component {
     let label = this.props.isReadOnly ? showLabel : formLabel;
     return (
       <div>
-        <h1>{label}</h1>
+        <div className='row'>
+          <div className='columns small-12'>
+            <h1>{label}</h1>
+          </div>
+        </div>
         {this._renderTriageNode()}
         {this._renderForm()}
       </div>

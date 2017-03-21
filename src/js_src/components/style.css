@@ -27,12 +27,40 @@
 	display: inline-block;
 }
 
+.progressTrackerContainer {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.progressTrackerLine {
+  position: absolute;
+  border-top: 3px solid #e2e2e2;
+  bottom: 0.67rem;
+  width: 100%;
+}
+
+.progressTrackerNode {
+  background: white;
+  border: 1px solid #0581C2;
+  width: 1rem;
+  height: 1rem;
+  position: relative;
+  top: 0.15rem;
+  border-radius: 0.5rem;
+  display: inline-block;
+}
+
+.completeTrackerNode {
+  background: #0581C2;
+}
+
 .sgdLoaderContainer {
 	display: flex;
 	min-height: 250px;
 	justify-content: center;
 	display: -webkit-flex; /* Safari */
-    -webkit-justify-content: space-around; /* Safari 6.1+ */
+  -webkit-justify-content: space-around; /* Safari 6.1+ */
 	align-items: center;
 	-webkit-align-items: center; /* Safari 7.0+ */
 }
