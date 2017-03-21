@@ -7,7 +7,7 @@ class Colleagues extends Component {
     return (
       <div>
         <ColleagueFormShow
-          isReadOnly isCurator={false} 
+          isCurator={false} 
         />
       </div>
     );

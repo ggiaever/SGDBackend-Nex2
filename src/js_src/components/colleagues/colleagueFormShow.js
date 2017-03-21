@@ -7,13 +7,14 @@ import _ from 'underscore';
 
 import fetchData from '../../lib/fetchData.js';
 // import Captcha from '../widgets/google_recaptcha.jsx';
+import CheckField from '../../components/forms/checkField';
 import StringField from '../../components/forms/stringField';
 import MultiSelectField from '../../components/forms/textField';
 
-const COLLEAGUES_AUTOCOMPLETE_URL = '/backend/autocomplete_results?category=colleague&q=';
-const GENES_URL = '/backend/autocomplete_results?category=locus&q=';
-const KEYWORDS_AUTOCOMPLETE_URL = '/backend/autocomplete_results?category=colleague&field=keywords&q=';
-const INSTITUTION_URL = '/backend/autocomplete_results?category=colleague&field=institution&q=';
+const COLLEAGUES_AUTOCOMPLETE_URL = '/autocomplete_results?category=colleague&q=';
+const GENES_URL = '/autocomplete_results?category=locus&q=';
+const KEYWORDS_AUTOCOMPLETE_URL = '/autocomplete_results?category=colleague&field=keywords&q=';
+const INSTITUTION_URL = '/autocomplete_results?category=colleague&field=institution&q=';
 
 const TRIAGED_COLLEAGUE_URL = '/colleagues/triage';
 const COLLEAGUE_GET_URL = '/colleagues';

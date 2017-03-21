@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Select from 'react-select';
 import _ from 'underscore';
 
 import StringField from './stringField';
@@ -23,9 +22,9 @@ class CheckField extends Component {
       </div>
     );
   }
-};
+}
 
-CheckFied.propTypes = 
+CheckField.propTypes = {
   displayName: React.PropTypes.string,
   paramName: React.PropTypes.string,
   defaultChecked: React.PropTypes.bool,
