@@ -223,17 +223,16 @@ class ColleaguesFormShow extends Component {
   
   _renderControls () {
     if (this.props.isReadOnly) return null;
-    let classSuffix = this.state.isUpdatePending ? ' disabled ' : '';
-    let label = this.state.isUpdatePending ? 'Saving...' : 'Send Update';
-    let saveIconNode = this.state.isUpdatePending ? null : <span><i className='fa fa-upload' /> </span>;
-    let _onClick = e => {
-      e.preventDefault();
-      this.handleSubmitData();
-    };
+    // let classSuffix = this.state.isUpdatePending ? ' disabled ' : '';
+    // let label = this.state.isUpdatePending ? 'Saving...' : 'Send Update';
+    // let saveIconNode = this.state.isUpdatePending ? null : <span><i className='fa fa-upload' /> </span>;
+    // let _onClick = e => {
+    //   e.preventDefault();
+    //   this.handleSubmitData();
+    // };
     return (
       <div>
         <div className='button-group' style={[style.controlContainer]}>
-          <a onClick={_onClick} className={`button small secondary ${classSuffix}`}style={[style.controlButton]}>{saveIconNode}{label}</a>
           <a href='/search?category=colleague' className='button small secondary'style={[style.controlButton]}><i className='fa fa-search' /> Search Colleagues</a>
         </div>
       </div>

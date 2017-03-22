@@ -8,8 +8,10 @@ class PublicLayout extends Component {
     return (
       <div>
         <ErrorContainer />
-        <div className={`${style.publicContainer} callout`}>
-          {this.props.children}
+        <div className={`${style.publicContainer} callout row`}>
+          <div className='columns small-12'>
+            {this.props.children}
+          </div>
         </div>
       </div>
     );

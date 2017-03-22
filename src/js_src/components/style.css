@@ -28,6 +28,10 @@
 }
 
 .progressTrackerContainer {
+  margin-bottom: 1rem;
+}
+
+.progressTrackerSection {
   display: flex;
   justify-content: space-between;
   position: relative;

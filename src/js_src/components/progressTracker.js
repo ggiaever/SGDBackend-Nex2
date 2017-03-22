@@ -29,11 +29,11 @@ class ProgressTracker extends Component {
 
   render() {
     return (
-      <div>
-        <div className={style.progressTrackerContainer}>
+      <div className={style.progressTrackerContainer}>
+        <div className={style.progressTrackerSection}>
           {this.renderLabels()}
         </div>
-        <div className={style.progressTrackerContainer}>
+        <div className={style.progressTrackerSection}>
           <div className={style.progressTrackerLine} />
           {this.renderSteps()}
         </div>
