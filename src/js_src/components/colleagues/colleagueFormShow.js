@@ -9,7 +9,8 @@ import fetchData from '../../lib/fetchData.js';
 // import Captcha from '../widgets/google_recaptcha.jsx';
 import CheckField from '../../components/forms/checkField';
 import StringField from '../../components/forms/stringField';
-import MultiSelectField from '../../components/forms/textField';
+import MultiSelectField from '../../components/forms/multiSelectField';
+import TextField from '../../components/forms/textField';
 
 const COLLEAGUES_AUTOCOMPLETE_URL = '/autocomplete_results?category=colleague&q=';
 const GENES_URL = '/autocomplete_results?category=locus&q=';
@@ -232,8 +233,8 @@ class ColleaguesFormShow extends Component {
     // };
     return (
       <div>
-        <div className='button-group' style={[style.controlContainer]}>
-          <a href='/search?category=colleague' className='button small secondary'style={[style.controlButton]}><i className='fa fa-search' /> Search Colleagues</a>
+        <div className='button-group'>
+          <a className='button'>Submit Update</a>
         </div>
       </div>
     );
