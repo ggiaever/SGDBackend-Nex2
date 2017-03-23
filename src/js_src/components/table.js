@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 
 class Table extends Component {
   formatHeader(d) {
@@ -16,10 +17,17 @@ class Table extends Component {
     );
   }
 
+  renderValue(d) {
+    // render simple value for string
+    if (typeof d === 'string') return d;
+    // render a link
+    return <Link to={d.href}>{d.name}</Link>;
+  }
+
   renderSingleEntry(entry, entryI) {
     let nodes = this.props.fields.map( (d, i) => {
       let data = entry[d];
-      return <td key={`td${entryI}.${i}`}>{data}</td>;
+      return <td key={`td${entryI}.${i}`}>{this.renderValue(data)}</td>;
     });
     return (
       <tr key={'tr' + entryI}>
