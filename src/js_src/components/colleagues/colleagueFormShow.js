@@ -12,6 +12,7 @@ import MultiSelectField from '../../components/forms/multiSelectField';
 import TextField from '../../components/forms/textField';
 
 const COLLEAGUES_AUTOCOMPLETE_URL = '/autocomplete_results?category=colleague&q=';
+const COUNTRIES_URL = '/assets/countries.json?';
 const GENES_URL = '/autocomplete_results?category=locus&q=';
 const KEYWORDS_AUTOCOMPLETE_URL = '/keywords?q=';
 
@@ -122,7 +123,13 @@ class ColleaguesFormShow extends Component {
         <StringField isReadOnly={this.props.isReadOnly} displayName='City' paramName='city' defaultValue={data.city} key='address0' />,
         <StringField isReadOnly={this.props.isReadOnly} displayName='State / Region' paramName='state' defaultValue={data.state} key='address1' />,
         <StringField isReadOnly={this.props.isReadOnly} displayName='Postal Code' paramName='postal_code' defaultValue={data.postal_code} key='address2' />,
-        <StringField isReadOnly={this.props.isReadOnly} displayName='Country' paramName='country' defaultValue={data.country} key='address3' />
+        <MultiSelectField
+          key='address3'
+          isReadOnly={this.props.isReadOnly} displayName='Country'
+          paramName='country' optionsUrl={COUNTRIES_URL}
+          defaultValues={data.country}
+          allowCreate
+        />
       ];
     }
     return (
@@ -137,7 +144,12 @@ class ColleaguesFormShow extends Component {
           <StringField isReadOnly={this.props.isReadOnly} displayName='Postal Code' paramName='postal_code' defaultValue={data.postal_code} />
         </div>
         <div className='column small-3'>
-          <StringField isReadOnly={this.props.isReadOnly} displayName='Country' paramName='country' defaultValue={data.country} />
+          <MultiSelectField
+            isReadOnly={this.props.isReadOnly} displayName='Country'
+            paramName='country' optionsUrl={COUNTRIES_URL}
+            defaultValues={data.country}
+            allowCreate
+          />
         </div>
       </div>
     );
