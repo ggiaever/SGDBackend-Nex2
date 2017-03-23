@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import ProgressTracker from '../../components/progressTracker';
-import ReferenceForm from '../../components/referenceForm';
+import ReferenceForm from '../../components/referenceForm/basicInfo';
 // import BasicReservationInfo from './basicReservationInfo';
 // import BasicColleagueInfo from './basicColleagueInfo';
 

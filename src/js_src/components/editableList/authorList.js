@@ -17,7 +17,11 @@ class EditableList extends Component {
   }
 
   renderValues () {
-    let nodes = this.state.values.map( (d, i) => {
+    let vals = this.state.values;
+    if (vals.length === 0) {
+      return <span>No authors added</span>;
+    }
+    let nodes = vals.map( (d, i) => {
       return <li key={`editLI${i}`}>{d}</li>;
     });
     return (
@@ -42,17 +46,22 @@ class EditableList extends Component {
       <div>
         {this.renderValues()}
         <div className='row'>
-          <div className='columns small-6'>
-            <label>Last Name</label>
+          <div className='columns small-4'>
+            <label>First Name</label>
             <input placeholder={this.props.placeholder} ref='lastText' type='text' />
           </div>
-          <div className='columns small-6'>
+          <div className='columns small-4'>
             <label>Last Name</label>
             <input placeholder={this.props.placeholder} ref='firstText' type='text' />
           </div>
-        </div>
-        <div className='text-right'>
-          <a className='button secondary small' onClick={this.handleAddValue.bind(this)}>Add</a>
+          <div className='columns small-2'>
+            <label>ORCID</label>
+            <input placeholder={this.props.placeholder} ref='orcidText' type='text' />
+          </div>
+          <div className='columns small-2 text-right'>
+            <label>&nbsp;</label>
+            <a className='button secondary' onClick={this.handleAddValue.bind(this)}>Add</a>
+          </div>
         </div>
       </div>
     );
