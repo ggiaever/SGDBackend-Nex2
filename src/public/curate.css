@@ -15,6 +15,7 @@
 */
 .Select {
   position: relative;
+  margin-bottom: 8px;
 }
 .selectContainer {
   .Select {
@@ -43,7 +44,6 @@
 .Select-control {
   background-color: #fff;
   border-color: #d9d9d9 #ccc #b3b3b3;
-  border-radius: 4px;
   border: 1px solid #ccc;
   color: #333;
   cursor: default;

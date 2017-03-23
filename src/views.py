@@ -216,7 +216,7 @@ def search(request):
 @view_config(route_name='keywords', renderer='json', request_method='GET')
 def keywords(request):
     keywords_db = DBSession.query(Keyword).all()
-    return {'options': [k.to_dict() for k in keywords_db]}
+    return {'results': [k.to_dict() for k in keywords_db]}
 
 @view_config(route_name='formats', renderer='json', request_method='GET')
 def formats(request):

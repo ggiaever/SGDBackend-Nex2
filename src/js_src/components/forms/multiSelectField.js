@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Async } from 'react-select';
+import _ from 'underscore';
 
 import fetchData from '../../lib/fetchData';
-
 
 class MultiSelectField extends Component {
   constructor(props) {
@@ -21,14 +21,14 @@ class MultiSelectField extends Component {
     let url = `${this.props.optionsUrl}${input}`;
     fetchData(url)
       .then( response => {
+        let _options = response.results || [];
         let optionsObj = {
-          options: response.results,
+          options: _options,
           complete: true
         };
         // add defaultOptions to results and remove duplicated
-        // let defaultOptions = this.props.defaultOptions || [];
-        // optionsObj.options = _.uniq(optionsObj.results.concat(defaultOptions));
-        // if (!this.isMounted()) return;
+        let defaultValues = this.props.defaultValues || [];
+        optionsObj.options = _.uniq(optionsObj.options.concat(defaultValues));
         return cb(null, optionsObj);
       });
   }
@@ -43,8 +43,8 @@ class MultiSelectField extends Component {
           name={this.props.paramName} value={this.state.value}
           loadOptions={this.getAsyncOptions.bind(this)}
           labelKey='name' valueKey='name'
-          allowCreate filterOption={() => true}
-          cache={false}
+          allowCreate
+          cache={false} multi={this.props.multi}
         />
       </div>
     );
@@ -58,7 +58,8 @@ MultiSelectField.propTypes = {
   defaultValues: React.PropTypes.array,
   iconClass: React.PropTypes.string,
   defaultOptions: React.PropTypes.array,
-  allowCreate: React.PropTypes.bool
+  allowCreate: React.PropTypes.bool,
+  multi: React.PropTypes.bool
 };
 
 export default MultiSelectField;

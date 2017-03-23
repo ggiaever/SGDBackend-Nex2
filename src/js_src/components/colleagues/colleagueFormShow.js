@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Radium from 'radium';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
@@ -14,8 +13,7 @@ import TextField from '../../components/forms/textField';
 
 const COLLEAGUES_AUTOCOMPLETE_URL = '/autocomplete_results?category=colleague&q=';
 const GENES_URL = '/autocomplete_results?category=locus&q=';
-const KEYWORDS_AUTOCOMPLETE_URL = '/autocomplete_results?category=colleague&field=keywords&q=';
-const INSTITUTION_URL = '/autocomplete_results?category=colleague&field=institution&q=';
+const KEYWORDS_AUTOCOMPLETE_URL = '/keywords?q=';
 
 const TRIAGED_COLLEAGUE_URL = '/colleagues/triage';
 const COLLEAGUE_GET_URL = '/colleagues';
@@ -42,9 +40,9 @@ class ColleaguesFormShow extends Component {
     let onApprove = this._submitData;
     if (!this.props.isTriage || !this.props.isCurator) return null;
     return (
-      <div className='button-group' style={[style.controlContainer]}>
-        <a onClick={onApprove} className='button small' style={[style.controlButton]}><i className='fa fa-check' /> Approve Update</a>
-        <Link to='/curate/colleagues' className='button small secondary' style={[style.controlButton]}><i className='fa fa-times' /> Cancel Update</Link>
+      <div className='button-group'>
+        <a onClick={onApprove} className='button small'><i className='fa fa-check' /> Approve Update</a>
+        <Link to='/curate/colleagues' className='button small secondary'><i className='fa fa-times' /> Cancel Update</Link>
       </div>
     );
   }
@@ -60,7 +58,7 @@ class ColleaguesFormShow extends Component {
   _renderForm () {
     if (this.state.isLoadPending) return <div className='sgd-loader-container'><div className='sgd-loader'></div></div>;    let data = this.state.data;
     return (
-      <div style={[style.container]}>
+      <div>
         {this._renderError()}
         <form ref='form' onSubmit={this.handleSubmitData}>
           <div className='row'>
@@ -69,14 +67,14 @@ class ColleaguesFormShow extends Component {
               <StringField isReadOnly={this.props.isReadOnly} displayName='Email' paramName='email' defaultValue={data.email} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Position' paramName='position' defaultValue={data.position} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Profession' paramName='profession' defaultValue={data.profession} />
-              <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Institution' paramName='institution' defaultValue={data.institution} optionsUrl={INSTITUTION_URL} isMulti={false} allowCreate />
+              <StringField isReadOnly={this.props.isReadOnly} displayName='Institution' paramName='institution' defaultValue={data.institution} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Work Phone' paramName='work_phone' defaultValue={data.work_phone} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Other Phone' paramName='other_phone' defaultValue={data.other_phone} />
               {this._renderAddress()}
               <StringField isReadOnly={this.props.isReadOnly} displayName='Lab Webpage' paramName='lab_page' defaultValue={data.lab_page} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Research Summary Webpage' paramName='research_page' defaultValue={data.research_page} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Research Interests' paramName='research_interests' defaultValue={data.research_interests} />
-              <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Keywords' paramName='keywords' optionsUrl={KEYWORDS_AUTOCOMPLETE_URL} defaultValues={data.keywords} />
+              <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Keywords' paramName='keywords' optionsUrl={KEYWORDS_AUTOCOMPLETE_URL} defaultValues={data.keywords} multi />
               {this._renderAssociates()}
               {this._renderGenes()}
               {this._renderOrcid()}
@@ -156,6 +154,7 @@ class ColleaguesFormShow extends Component {
         defaultValues={supervisors} defaultOptions={supervisors}
         allowCreate key='associate0'
         isLinks formatLink={_formatLink}
+        multi
       />,
       <MultiSelectField
         isReadOnly={this.props.isReadOnly} displayName='Lab Members'
@@ -163,6 +162,7 @@ class ColleaguesFormShow extends Component {
         defaultValues={labMembers} defaultOptions={labMembers}
         allowCreate key='associate1'
         isLinks formatLink={_formatLink}
+        multi
       />
     ];
   }
@@ -182,7 +182,7 @@ class ColleaguesFormShow extends Component {
 
   _renderGenes () {
     let data = this.state.data.associated_genes || [];
-    return <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Associated Genes' paramName='associated_gene_ids' optionsUrl={GENES_URL} defaultValues={data} defaultOptions={data} />;
+    return <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Associated Genes' paramName='associated_gene_ids' optionsUrl={GENES_URL} defaultValues={data} defaultOptions={data} multi />;
   }
 
   _renderComments () {
@@ -214,8 +214,7 @@ class ColleaguesFormShow extends Component {
         this.setState({ data: _data, isLoadPending: false });
       });
     } else {
-      let backendSegment = this.props.isCurator ? '' : '/backend';
-      let url = `${backendSegment}${COLLEAGUE_GET_URL}/${this.props.colleagueDisplayName}`;
+      let url = `/${COLLEAGUE_GET_URL}/${this.props.colleagueDisplayName}`;
       fetchData(url).then( json => {
         this.setState({ data: json, isLoadPending: false });
       });
@@ -315,21 +314,9 @@ ColleaguesFormShow.propTypes = {
   isTriage: React.PropTypes.bool
 };
 
-const style = {
-  container: {
-    marginBottom: '2rem'
-  },
-  controlContainer: {
-    marginBottom: '1rem'
-  },
-  controlButton: {
-    marginRight: '0.5rem'
-  }
-};
-
 function mapStateToProps() {
   return {
   };
 }
 
-export default connect(mapStateToProps)(Radium(ColleaguesFormShow));
+export default connect(mapStateToProps)(ColleaguesFormShow);
