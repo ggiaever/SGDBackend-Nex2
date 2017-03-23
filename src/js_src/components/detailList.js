@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'underscore';
 
 import style from './style.css';
 import { makeFieldDisplayName } from '../lib/searchHelpers';
@@ -8,7 +9,8 @@ const JOIN_CHAR = ', ';
 class DetailList extends Component {
   render() {
     let d = this.props.data;
-    let nodes = this.props.fields.map( (field) => {
+    let fields = this.props.fields || _.keys(d);
+    let nodes = fields.map( (field) => {
       let valueNode;
       let value = d[field];
       if (Array.isArray(value)) {

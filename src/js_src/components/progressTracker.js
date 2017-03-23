@@ -29,7 +29,7 @@ class ProgressTracker extends Component {
 
   render() {
     return (
-      <div className={style.progressTrackerContainer}>
+      <div className={style.paddedBottom}>
         <div className={style.progressTrackerSection}>
           {this.renderLabels()}
         </div>
