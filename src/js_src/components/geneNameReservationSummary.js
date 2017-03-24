@@ -30,7 +30,6 @@ class GeneNameReservationSummary extends Component {
           <label>Reference</label>
           <a>Sheppard TK, et al. (2016) The Saccharomyces Genome Database Variant Viewer. Nucleic Acids Res 44(D1):D698-702</a>
         </div>
-        <a className='button'>Submit</a>
       </div>
     );
   }

@@ -14,6 +14,7 @@ import { requireAuthentication } from './containers/authenticateComponent';
 import CurateLayout from './containers/curateHome/layout';
 import CurateHome from './containers/curateHome';
 import GeneNameReservationIndex from './containers/reservation/index';
+import GeneNameReservationShow from './containers/reservation/show';
 import Search from './containers/search';
 import LocusShow from './containers/locus/show';
 import TriageIndex from './containers/triage';
@@ -37,6 +38,7 @@ export default (
         <IndexRoute component={requireAuthentication(CurateHome)} />
         <Route component={requireAuthentication(TriageIndex)} path='triage' />
         <Route component={requireAuthentication(GeneNameReservationIndex)} path='reservations' />
+        <Route component={requireAuthentication(GeneNameReservationShow)} path='reservations/:id' />
         <Route component={requireAuthentication(SpreadsheetUpload)} path='spreadsheet_upload' />
       </Route>
       <Route component={requireAuthentication(LocusShow)} path='curate/locus/:id' />
