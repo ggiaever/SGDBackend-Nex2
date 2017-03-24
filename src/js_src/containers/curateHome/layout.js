@@ -46,7 +46,7 @@ function mapStateToProps() {
   return {
     numAuthorResponses: 1,
     numColleagues: 1,
-    numGeneReg: 3,
+    numGeneReg: 1,
     numLit: 124
   };
 }

@@ -13,7 +13,10 @@ class GeneNameReservationIndex extends Component {
           href: '/curate/reservations/123'
         },
         'ORF': 'YHR214W',
-        'Reference': 'Eustice M and Pillus L (2014) Unexpected Function of the Glucanosyltransferase Gas1 in the DNA Damage Response Linked to Histone H3 Acetyltransferases in Saccharomyces cerevisiae. Genetics 196(4):1029-39',
+        'Status': 'Unprocessed',
+        'Reservation Date': 'n/a',
+        'Expiration Date': 'n/a',
+        'Reference': 'Fox T (2016)',
       }
     ];
     let _fields = _.keys(reservations[0]);

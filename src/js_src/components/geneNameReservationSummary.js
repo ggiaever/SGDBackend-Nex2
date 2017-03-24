@@ -16,6 +16,11 @@ class GeneNameReservationSummary extends Component {
       'phone': '(555) 555-1234',
       'email': 'tshepp@stanford.edu'
     };
+    let statusInfo = {
+      'Status': 'Reserved',
+      'Reservation Date': '2017-03-24',
+      'Expiration Date': '2018-03-24'
+    };
     return (
       <div>
         <div className={style.paddedBottom}>
@@ -28,7 +33,15 @@ class GeneNameReservationSummary extends Component {
         </div>
         <div className={style.paddedBottom}>      
           <label>Reference</label>
-          <a>Sheppard TK, et al. (2016) The Saccharomyces Genome Database Variant Viewer. Nucleic Acids Res 44(D1):D698-702</a>
+          <a>Fox T (2016)</a>
+        </div>
+        <div className={style.paddedBottom}>
+          <label>Reservation Status</label>
+          <DetailList data={statusInfo} />
+        </div>
+        <div className={style.splitButtonContainer}>
+          <a className='button'>Promote Gene Name</a>
+          <a className='button secondary'><i className='fa fa-trash' /> Discard</a>
         </div>
       </div>
     );
