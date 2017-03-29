@@ -649,6 +649,19 @@ class Colleague(Base):
 
     source = relationship(u'Source')
 
+    def to_info_dict(self):
+        return {
+            "colleague_id": self.colleague_id,
+            "orcid": self.orcid,
+            "first_name": self.first_name,
+            "middle_name": self.middle_name,
+            "last_name": self.last_name,
+            "suffix": self.suffix,
+            "institution": self.institution,
+            "email": self.email,
+            "link": self.obj_url
+        }
+
     def _include_keywords_to_dict(self, colleague_dict):
         keyword_ids = DBSession.query(ColleagueKeyword.keyword_id).filter(ColleagueKeyword.colleague_id == self.colleague_id).all()
         if len(keyword_ids) > 0:
