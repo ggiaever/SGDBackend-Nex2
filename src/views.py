@@ -38,7 +38,7 @@ def home_view(request):
 
     return {
         'google_client_id': os.environ['GOOGLE_CLIENT_ID'],
-        'google_captcha_id': os.environ['GOOGLE_CAPTCHA_ID']
+        'google_captcha_id': os.environ['GOOGLE_CAPTCHA_ID'],
         'pusher_key': pusher_key
     }
     
