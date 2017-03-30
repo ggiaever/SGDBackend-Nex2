@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
@@ -102,7 +102,7 @@ class LayoutComponent extends Component {
 }
 
 LayoutComponent.propTypes = {
-  children: PropTypes.node,
+  children: React.PropTypes.node,
   error: React.PropTypes.string,
   message: React.PropTypes.string,
   dispatch: React.PropTypes.func,
