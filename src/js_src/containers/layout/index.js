@@ -7,6 +7,9 @@ import style from './style.css';
 import SearchBar from './searchBar';
 import ErrorContainer from './errorContainer';
 import curateLogo from './curateLogo.png';
+import Loader from './loader/index';
+import LoadingPage from '../../components/loadingPage';
+import { clearError, clearMessage } from '../../actions/metaActions';
 
 class LayoutComponent extends Component {
   renderAuthedMenu() {
@@ -22,6 +25,39 @@ class LayoutComponent extends Component {
     );
   }
   
+  renderError() {
+    if (!this.props.error) return null;
+    let handleClick = () => {
+      this.props.dispatch(clearError());
+    };
+    return (
+      <div className={`alert callout ${style.errorContainer}`}>
+        <h3 className={style.closeIcon} onClick={handleClick}><i className='fa fa-close' /></h3>
+        <p>
+          {this.props.error}
+        </p>
+      </div>
+    );
+  }
+
+  renderMessage() {
+    if (!this.props.message) return null;
+    let handleClick = () => {
+      this.props.dispatch(clearMessage());
+    };
+    return (
+      <div className={`primary callout ${style.errorContainer}`}>
+        <h3 className={style.closeIcon} onClick={handleClick}><i className='fa fa-close' /></h3>
+        <p dangerouslySetInnerHTML={{ __html: this.props.message}} />
+      </div>
+    );
+  }
+
+  renderBody() {
+    if (!this.props.isReady) return <LoadingPage />;
+    return this.props.children;
+  }
+
   render() {
     // init auth nodes, either login or logout links
     let authNodes = this.props.isAuthenticated ? this.renderAuthedMenu() : null;
@@ -55,8 +91,9 @@ class LayoutComponent extends Component {
           </div>
         </nav>
         <div className={`row ${style.contentRow}`}>
+          <Loader />
           <div className={`large-12 columns ${style.contentContainer}`}>
-            {this.props.children}
+            {this.renderBody()}
           </div>
         </div>
       </div>
@@ -66,12 +103,19 @@ class LayoutComponent extends Component {
 
 LayoutComponent.propTypes = {
   children: PropTypes.node,
-  isAuthenticated: React.PropTypes.bool
+  error: React.PropTypes.string,
+  message: React.PropTypes.string,
+  dispatch: React.PropTypes.func,
+  isAuthenticated: React.PropTypes.bool,
+  isReady: React.PropTypes.bool,
 };
 
 function mapStateToProps(state) {
   return {
-    isAuthenticated: state.auth.get('isAuthenticated')
+    error: state.meta.get('error'),
+    message: state.meta.get('message'),
+    isAuthenticated: state.auth.get('isAuthenticated'),
+    isReady: state.meta.get('isReady')
   };
 }
 
