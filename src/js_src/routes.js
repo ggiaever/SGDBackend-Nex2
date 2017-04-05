@@ -5,6 +5,8 @@ import { IndexRoute, Route  } from 'react-router';
 import Layout from './containers/layout';
 import PublicLayout from './containers/layout/PublicLayout';
 import PublicHome from './containers/publicHome';
+import ColleaguesIndex from './containers/colleagues/index';
+import ColleaguesShow from './containers/colleagues/show';
 import NewColleague from './containers/colleagues/new';
 import EditColleague from './containers/colleagues/edit';
 import NewGeneNameReservation from './containers/reservation/new';
@@ -27,7 +29,6 @@ import CurateLitActions from './containers/curateLit/actions';
 import AuthorResponse from './containers/authorResponse/index';
 import SpreadsheetUpload from './containers/spreadsheetUpload/index';
 
-// <Route component={requireAuthentication(SpreadsheetUpload)} path='spreadsheet_upload' />
 export default (
   <Route>
     <Route component={Layout} path='/'>
@@ -38,6 +39,8 @@ export default (
       <Route component={CurateLayout} path='curate'>
         <IndexRoute component={requireAuthentication(CurateHome)} />
         <Route component={requireAuthentication(TriageIndex)} path='triage' />
+        <Route component={requireAuthentication(ColleaguesIndex)} path='colleague_triage' />
+        <Route component={requireAuthentication(ColleaguesShow)} path='colleague_triage/:formatName' />
         <Route component={requireAuthentication(GeneNameReservationIndex)} path='reservations' />
         <Route component={requireAuthentication(GeneNameReservationShow)} path='reservations/:id' />
         <Route component={requireAuthentication(SpreadsheetUpload)} path='spreadsheet_upload' />

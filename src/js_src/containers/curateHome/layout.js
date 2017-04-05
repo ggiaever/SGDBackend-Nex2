@@ -18,7 +18,7 @@ class CurateLayout extends Component {
           <ul className='vertical menu'>
             <li><Link to='curate'><i className='fa fa-home' /> Home</Link></li>
             <li><Link to='curate/triage'><i className='fa fa-book' /> Lit Triage {this.renderNumMaybe(this.props.numLit)}</Link></li>
-            <li><Link to='curate/colleague_updates'><i className='fa fa-users' /> Colleague Updates {this.renderNumMaybe(this.props.numColleagues)}</Link></li>
+            <li><Link to='curate/colleague_triage'><i className='fa fa-users' /> Colleague Updates {this.renderNumMaybe(this.props.numColleagues)}</Link></li>
             <li><Link to='curate/reservations'><i className='fa fa-sticky-note' /> Gene Name Reservations {this.renderNumMaybe(this.props.numGeneReg)}</Link></li>
             <li><Link to='curate/author_responses'><i className='fa fa-mail-reply' /> Author Responses {this.renderNumMaybe(this.props.numAuthorResponses)}</Link></li>
             <li><Link to='curate/spreadsheet_upload'><i className='fa fa-upload' /> Spreadsheet Upload</Link></li>
