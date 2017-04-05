@@ -65,6 +65,7 @@ class ColleaguesFormShow extends Component {
           <div className='row'>
             <div className='column small-12'>
               {this._renderName()}
+              {this._renderOrcid()}
               <StringField isReadOnly={this.props.isReadOnly} displayName='Email' paramName='email' defaultValue={data.email} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Position' paramName='position' defaultValue={data.position} />
               <StringField isReadOnly={this.props.isReadOnly} displayName='Profession' paramName='profession' defaultValue={data.profession} />
@@ -78,7 +79,6 @@ class ColleaguesFormShow extends Component {
               <MultiSelectField isReadOnly={this.props.isReadOnly} displayName='Keywords' paramName='keywords' optionsUrl={KEYWORDS_AUTOCOMPLETE_URL} defaultValues={data.keywords} multi />
               {this._renderAssociates()}
               {this._renderGenes()}
-              {this._renderOrcid()}
               {this._renderCuratorInput()}
             </div>
           </div>
