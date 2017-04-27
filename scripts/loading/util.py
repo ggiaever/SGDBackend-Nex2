@@ -2,7 +2,7 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.ext.declarative.api import declarative_base
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import not_
-from gpad_config import curator_id, computational_created_by,  \
+from go.gpad_config import curator_id, computational_created_by,  \
     go_db_code_mapping, go_ref_mapping, current_go_qualifier, email_receiver, \
     email_subject
 
@@ -308,7 +308,7 @@ def read_gpad_file(filename, nex_session, uniprot_to_date_assigned, uniprot_to_s
     from models import Referencedbentity, Locusdbentity, Go, EcoAlias
     import config
 
-    goid_to_go_id = dict([(x.goid, x.id) for x in nex_session.query(Go).all()])
+    goid_to_go_id = dict([(x.goid, x.go_id) for x in nex_session.query(Go).all()])
     evidence_to_eco_id = dict([(x.display_name, x.eco_id) for x in nex_session.query(EcoAlias).all()])
 
     pmid_to_reference_id = {}
@@ -499,9 +499,10 @@ def read_gpi_file(filename):
         # same uniprot ID for multiple RNA entries                                                  
         
         uniprotID = field[1]
-        sgdid = field[8].replace('SGD:', '')
+        sgdidlist = field[8].replace('SGD:', '')
         sgdid_list = [] if uniprot_to_sgdid_list.get(uniprotID) is None else uniprot_to_sgdid_list.get(uniprotID)
-        sgdid_list.append(sgdid)
+        for sgdid in sgdidlist.split('|'):
+            sgdid_list.append(sgdid)
         uniprot_to_sgdid_list[uniprotID] = sgdid_list
 
         for pair in field[9].split('|'):
@@ -779,6 +780,40 @@ def get_dbentity_by_name(dbentity_name, to_ignore, nex_session):
             dbentity_id = get_word_to_dbentity_id(dbentity_name, nex_session)
             return None if dbentity_id is None else nex_session.query(Locusdbentity).filter_by(dbentity_id=dbentity_id).first()
     return None
+
+
+def extract_gene_names(text, name_list, alias_to_name):
+    text = text.replace("/", ' ')
+    text = text.replace('-', ' ')
+    text = text.replace('_', ' ')
+    words = text.split(' ')
+    genes = []
+    found = {}
+    for word in words:
+        if word.upper() in found:
+            continue
+        found[word.upper()] = 1
+        if word.upper() in name_list:
+            genes.append(word)
+            continue
+        if word.endswith('.') or word.endswith(',') or word.endswith('?') or word.endswith('-'):
+            word = word[:-1]
+        if word.endswith(')'):
+            word = word[:-1]
+        if word.startswith('('):
+            word = word[1:]
+        if word.upper() in found:
+            continue
+        found[word.upper()] = 1
+        gene_name = word
+        # if word.endswith('p'):
+        #    gene_name = gene_name[:-1]
+        if gene_name.upper() in name_list:
+            genes.append(word)
+        elif gene_name.upper() in alias_to_name:
+            genes.append(word + "=" + str(alias_to_name[gene_name.upper()]))
+            
+    return genes
 
 def link_gene_names(text, to_ignore, nex_session):
     words = text.split(' ')
