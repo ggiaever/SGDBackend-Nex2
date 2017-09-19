@@ -13,31 +13,7 @@ engine = create_engine(os.environ['NEX2_URI'], pool_recycle=3600)
 DBSession.configure(bind=engine)
 Base.metadata.bind = engine
 
-def modify_helper():
-    obj = {
-        "data": []
-    }
-    with open('./scripts/bgi_json/data_dump/SGD.1.0.1_basicGeneInformation.json') as json_data_file:
-        json_data = json.load(json_data_file)
-        for item in json_data["data"]:
-            mod_item = item["crossReferenceIds"]
-            temp_cross = []
-            if(len(mod_item) > 0):
-                for x in mod_item:
-                    if(',' in x):
-                        temp = x.split(",")
-                        for xy in temp:
-                            temp_cross.append(xy)
-                    else:
-                        temp_cross.append(x)
-            item["crossReferenceIds"] = temp_cross
-            obj["data"].append(item)
-            #pdb.set_trace()
-            print 'name'
 
-    result = json.dumps(obj, ensure_ascii=False)
-    with open('./scripts/bgi_json/data_dump/new_obj.json', 'w+') as res_file:
-        res_file.write(result)
 # populate text file with sgdis to be used to retrieve panther data
 def get_sgdids_for_panther():
     new_data = Locusdbentity.get_s288c_genes()
@@ -54,17 +30,18 @@ def get_sgdids_for_panther():
 # pair pantherIds with corresponding sgdids
 def get_panther_sgdids():
     data_dict = {}
-    with open('./scripts/bgi_json/data_dump/panther/panther_search_results.json') as json_data_file:
+    with open('./scripts/bgi_json/data_dump/panther/panther_search_results.json'
+             ) as json_data_file:
         json_data = json.load(json_data_file)
         for item in json_data:
             temp_str = ','.join(map(str, item))
             reg_pattern = r'(SGD=S\d+)|(PTHR\d+)'
             reg_result = sorted(list(set(re.findall(reg_pattern, temp_str))))
-            if(len(reg_result) > 1):
+            if (len(reg_result) > 1):
                 item_str1 = ''.join(reg_result[0])
                 item_str2 = ''.join(reg_result[1]).split("=")
                 data_dict[item_str2[1]] = item_str1
-            elif(len(reg_result) == 1):
+            elif (len(reg_result) == 1):
                 item_str1 = ''.join(reg_result[0]).split("=")
                 data_dict[item[1]] = None
             else:
@@ -72,16 +49,17 @@ def get_panther_sgdids():
 
         return data_dict
 
+
 # pupulate json file with basic gene infromation(bgi)
 def get_bgi_data():
-    combined_list = combine_panther_locus_list(get_panther_sgdids(), Locusdbentity.get_s288c_genes())
+    combined_list = combine_panther_locus_list(get_panther_sgdids(),
+                                               Locusdbentity.get_s288c_genes())
     #get all dbentityIds
     result = []
-    if(len(combined_list) > 0):
+    if (len(combined_list) > 0):
         for item_key in combined_list:
             obj = {
-                "crossReferenceIds":
-                    [],
+                "crossReferenceIds": [],
                 "primaryId":
                     "",
                 "symbol":
@@ -97,8 +75,7 @@ def get_bgi_data():
                     "",
                 "taxonId":
                     "NCBITaxon:559292",
-                "synonyms":
-                    [],
+                "synonyms": [],
                 "geneLiteratureUrl":
                     "",
                 "geneSynopsis":
@@ -109,69 +86,80 @@ def get_bgi_data():
             locus_alias_data = DBSession.query(LocusAlias).filter(
                 LocusAlias.locus_id == item.dbentity_id).all()
 
-            if(len(locus_alias_data) > 0):
+            if (len(locus_alias_data) > 0):
                 dna_seq_annotation_obj = DBSession.query(
                     Dnasequenceannotation).filter(
                         Dnasequenceannotation.dbentity_id == item.dbentity_id,
                         Dnasequenceannotation.taxonomy_id == 274901,
                         Dnasequenceannotation.dna_type == "GENOMIC").all()
 
-                if(len(dna_seq_annotation_obj) > 0):
-                    chromosome = dna_seq_annotation_obj[0].contig.display_name.split(" ")
-                    obj["genomeLocations"][0]["startPosition"] = dna_seq_annotation_obj[0].start_index
-                    obj["genomeLocations"][0]["endPosition"] = dna_seq_annotation_obj[0].end_index
-                    obj["genomeLocations"][0]["strand"] = dna_seq_annotation_obj[0].strand
-                    obj["genomeLocations"][0]["startPosition"] = dna_seq_annotation_obj[0].start_index
-                    obj["genomeLocations"][0]["chromosome"] = "chr"+chromosome[1]
+                if (len(dna_seq_annotation_obj) > 0):
+                    chromosome = dna_seq_annotation_obj[
+                        0].contig.display_name.split(" ")
+                    obj["genomeLocations"][0][
+                        "startPosition"] = dna_seq_annotation_obj[0].start_index
+                    obj["genomeLocations"][0][
+                        "endPosition"] = dna_seq_annotation_obj[0].end_index
+                    obj["genomeLocations"][0][
+                        "strand"] = dna_seq_annotation_obj[0].strand
+                    obj["genomeLocations"][0][
+                        "startPosition"] = dna_seq_annotation_obj[0].start_index
+                    obj["genomeLocations"][0][
+                        "chromosome"] = "chr" + chromosome[1]
                     obj["soTermId"] = dna_seq_annotation_obj[0].so.soid
-                mod_locus_alias_data = get_locus_alias_data(locus_alias_data, item.dbentity_id)
+                mod_locus_alias_data = get_locus_alias_data(
+                    locus_alias_data, item.dbentity_id)
 
                 for mod_item in mod_locus_alias_data:
                     mod_value = mod_locus_alias_data.get(mod_item)
-                    if (item.gene_name is not None):
-                        obj["symbol"] = item.gene_name
-                    else:
-                        obj["symbol"] = item.systematic_name
                     if (type(mod_value) is list):
                         if (len(mod_locus_alias_data.get("aliases")) == 0):
                             obj["synonyms"].append(str(item.systematic_name))
                         else:
-                            if (mod_locus_alias_data.get("aliases") is not None):
+                            if (mod_locus_alias_data.get("aliases") is
+                                    not None):
                                 alias_itms = mod_locus_alias_data.get("aliases")
-                                if (item.gene_name is not None):
-                                    obj["synonyms"] = mod_locus_alias_data.get("aliases")
-                                    obj["synonyms"].append(item.systematic_name)
-                                else:
-                                    obj["synonyms"] = mod_locus_alias_data.get("aliases")
-
-                                #obj["synonyms"].append(','.join([str(x) for x in alias_itms]))
+                                obj["synonyms"].append(
+                                    ','.join([str(x) for x in alias_itms]))
                     else:
                         if (mod_value.get("secondaryIds") is not None):
                             temp_sec_item = mod_value.get("secondaryIds")
-                            if(len(temp_sec_item) > 0):
-                                if(item.name_description is not None):
+                            if (len(temp_sec_item) > 0):
+                                if (item.name_description is not None):
                                     obj["name"] = item.name_description
-                                if(len(temp_sec_item) > 1):
-                                    obj["secondaryIds"] = [','.join([str(x) for x in temp_sec_item])]
+                                if (len(temp_sec_item) > 1):
+                                    obj["secondaryIds"] = [
+                                        ','.join(
+                                            [str(x) for x in temp_sec_item])
+                                    ]
                                 else:
-                                    if(len(temp_sec_item) == 1):
-                                        obj["secondaryIds"] = [str(temp_sec_item[0])]
+                                    if (len(temp_sec_item) == 1):
+                                        obj["secondaryIds"] = [
+                                            str(temp_sec_item[0])
+                                        ]
                         if (mod_value.get("crossReferenceIds") is not None):
                             temp_cross_item = mod_value.get("crossReferenceIds")
-                            if(len(temp_cross_item) > 1):
+                            if (len(temp_cross_item) > 1):
                                 obj["crossReferenceIds"] = [
                                     ','.join([str(x) for x in temp_cross_item])
                                 ]
                             else:
-                                if(len(temp_cross_item) == 1):
-                                    obj["crossReferenceIds"] = [str(temp_cross_item[0])]
-                if(item_panther is not None):
+                                if (len(temp_cross_item) == 1):
+                                    obj["crossReferenceIds"] = [
+                                        str(temp_cross_item[0])
+                                    ]
+                if (item_panther is not None):
 
                     obj["crossReferenceIds"].append("PANTHER:" + item_panther)
                     obj["primaryId"] = "SGD:" + item.sgdid
                     item = combined_list[item_key]["locus_obj"]
                     obj["geneSynopsis"] = item.description
                     obj["geneLiteratureUrl"] = "http://www.yeastgenome.org/locus/" + item.sgdid + "/literature"
+                    if (item.gene_name is not None):
+                        obj["symbol"] = item.gene_name
+                    else:
+                        obj["symbol"] = item.systematic_name
+
                     result.append(obj)
 
                 else:
@@ -180,12 +168,17 @@ def get_bgi_data():
                     item = combined_list[item_key]["locus_obj"]
                     obj["geneSynopsis"] = item.description
                     obj["geneLiteratureUrl"] = "http://www.yeastgenome.org/locus/" + item.sgdid + "/literature"
+                    if (item.gene_name is not None):
+                        obj["symbol"] = item.gene_name
+                    else:
+                        obj["symbol"] = item.systematic_name
+
                     result.append(obj)
-        if(len(result) > 0):
-            output_obj = {
-                "data": result
-            }
-            with open('./scripts/bgi_json/data_dump/SGD.1.0.1_basicGeneInformation_new_friday.json','w+') as res_file:
+        if (len(result) > 0):
+            output_obj = {"data": result}
+            with open(
+                    './scripts/bgi_json/data_dump/SGD.1.0.1_basicGeneInformation_new_friday.json',
+                    'w+') as res_file:
                 res_file.write(json.dumps(output_obj))
 
 
@@ -193,13 +186,10 @@ def get_bgi_data():
 def combine_panther_locus_list(panther_list, locus_list):
     combined_list = {}
 
-    if(len(panther_list) > 0 and len(locus_list) > 0):
+    if (len(panther_list) > 0 and len(locus_list) > 0):
         for item in locus_list:
-            obj = {
-                "panther_id": "",
-                "locus_obj": ""
-            }
-            if(panther_list.get(item.sgdid) is not None):
+            obj = {"panther_id": "", "locus_obj": ""}
+            if (panther_list.get(item.sgdid) is not None):
                 obj["panther_id"] = panther_list.get(item.sgdid)
                 obj["locus_obj"] = item
                 combined_list[item.dbentity_id] = obj
@@ -214,31 +204,31 @@ def combine_panther_locus_list(panther_list, locus_list):
 def get_locus_alias_data_bulk():
     print 'hello'
 
+
 # helper method to get locus_alias data
 def get_locus_alias_data(locus_alias_list, id):
     data_container = {}
     aliases = []
     aliases_types = ["Uniform", "Non-uniform"]
-    obj = {
-        "secondaryIds": [],
-         "crossReferenceIds": []
-        }
+    obj = {"secondaryIds": [], "crossReferenceIds": []}
     flag = False
     for item in locus_alias_list:
 
-        if(item.alias_type in aliases_types):
-            aliases.append(item.display_name)
-        if(item.alias_type == "SGDID Secondary"):
-            obj["secondaryIds"].append(item.source.display_name+":" + item.display_name)
+        if (item.alias_type in aliases_types):
+            aliases.append(item.locus.systematic_name)
+        if (item.alias_type == "SGDID Secondary"):
+            obj["secondaryIds"].append(item.source.display_name + ":" +
+                                       item.display_name)
             flag = True
         if (item.alias_type == "UniProtKB ID"):
             obj["crossReferenceIds"].append("UniProtKB:" + item.display_name)
             flag = True
-        if (item.alias_type == "Gene ID" and item.source.display_name == 'NCBI'):
+        if (item.alias_type == "Gene ID" and
+                item.source.display_name == 'NCBI'):
             obj["crossReferenceIds"].append("NCBI_Gene:" + item.display_name)
             flag = True
 
-    if(flag):
+    if (flag):
         data_container[id] = obj
     mod_set = set(aliases)
     data_container["aliases"] = list(mod_set)
@@ -247,13 +237,13 @@ def get_locus_alias_data(locus_alias_list, id):
 
 # entry point
 if __name__ == '__main__':
-    '''start_time = time.time()
+    start_time = time.time()
     print "--------------start loading genes--------------"
     with PyCallGraph(output=GraphvizOutput()):
         get_bgi_data()
 
     with open('./scripts/bgi_json/data_dump/log_time.txt', 'w+') as res_file:
-        time_taken = "time taken: " + ("--- %s seconds ---" % (time.time() - start_time))
+        time_taken = "time taken: " + ("--- %s seconds ---" %
+                                       (time.time() - start_time))
         res_file.write(time_taken)
-    print "--------------done loading genes--------------"'''
-    modify_helper()
+    print "--------------done loading genes--------------"
