@@ -13,27 +13,53 @@ engine = create_engine(os.environ['NEX2_URI'], pool_recycle=3600)
 DBSession.configure(bind=engine)
 Base.metadata.bind = engine
 
+
+def sgd_id_helper():
+    obj = {"data": []}
+    with open('./scripts/bgi_json/data_dump/new_obj.json') as json_data_file:
+        json_data = json.load(json_data_file)
+        for item in json_data["data"]:
+
+            if (item.get("secondaryIds") is not None):
+
+                mod_item = item["secondaryIds"]
+                temp_sgdid = []
+                if (len(mod_item) > 0):
+                    for x in mod_item:
+                        if (',' in x):
+                            temp = x.split(",")
+                            for xy in temp:
+                                temp_sgdid.append(xy)
+                        else:
+                            temp_sgdid.append(x)
+                item["secondaryIds"] = temp_sgdid
+            obj["data"].append(item)
+
+    result = json.dumps(obj, ensure_ascii=False)
+    with open('./scripts/bgi_json/data_dump/new_new_obj.json', 'w+') as res_file:
+        res_file.write(result)
+
+
 def modify_helper():
     obj = {
         "data": []
     }
-    with open('./scripts/bgi_json/data_dump/SGD.1.0.1_basicGeneInformation.json') as json_data_file:
+    with open('./scripts/bgi_json/data_dump/SGD.1.0.2_basicGeneInformation.json') as json_data_file:
         json_data = json.load(json_data_file)
         for item in json_data["data"]:
-            mod_item = item["crossReferenceIds"]
-            temp_cross = []
-            if(len(mod_item) > 0):
-                for x in mod_item:
-                    if(',' in x):
-                        temp = x.split(",")
-                        for xy in temp:
-                            temp_cross.append(xy)
-                    else:
-                        temp_cross.append(x)
-            item["crossReferenceIds"] = temp_cross
+            if(item.get("crossReferenceIds") is not None):
+                mod_item = item["crossReferenceIds"]
+                temp_cross = []
+                if(len(mod_item) > 0):
+                    for x in mod_item:
+                        if(',' in x):
+                            temp = x.split(",")
+                            for xy in temp:
+                                temp_cross.append(xy)
+                        else:
+                            temp_cross.append(x)
+                item["crossReferenceIds"] = temp_cross
             obj["data"].append(item)
-            #pdb.set_trace()
-            print 'name'
 
     result = json.dumps(obj, ensure_ascii=False)
     with open('./scripts/bgi_json/data_dump/new_obj.json', 'w+') as res_file:
@@ -256,4 +282,5 @@ if __name__ == '__main__':
         time_taken = "time taken: " + ("--- %s seconds ---" % (time.time() - start_time))
         res_file.write(time_taken)
     print "--------------done loading genes--------------"'''
-    modify_helper()
+    sgd_id_helper()
+    #modify_helper()
