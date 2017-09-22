@@ -69,6 +69,9 @@ index-redis:
 bgi-json:
 	source dev_variables.sh && python scripts/bgi_json/bgi.py
 
+disease-json:
+	source dev_variables.sh && python scripts/bgi_json/disease.py
+	
 upload-expression-details:
 	source dev_variables.sh && python scripts/loading/upload_expression_details.py
 
