@@ -6,26 +6,9 @@ import re
 import time
 import sys
 from datetime import datetime
-import pdb
 import dateutil.parser as parser
 from pycallgraph import PyCallGraph
 from pycallgraph.output import GraphvizOutput
-
-
-def txt_to_json():
-    # read text file and convert
-    '''f = open('./scripts/bgi_json/data_dump/disease/disease.txt', 'r')
-    f1 = json.load(f)
-    with open('./scripts/bgi_json/data_dump/disease/disease.txt',
-              'r') as _file:
-        content = json.loads(_file)
-        pdb.set_trace()
-        print 'hello'''
-    f = open('./scripts/bgi_json/data_dump/disease/disease_content.txt', 'w')
-    f1 = open('./scripts/bgi_json/data_dump/disease/disease.txt', 'r')
-    data = json.loads(f1)
-    f.write(json.dumps(data, indent=1))
-    f.close()
 
 
 def txtJson():
@@ -34,7 +17,6 @@ def txtJson():
             './scripts/bgi_json/data_dump/disease/disease_2.json') as data_file:
 
         content = json.load(data_file)
-
     for item in content:
         if(item[10] != "Inferred"):
             obj = {
@@ -65,8 +47,6 @@ def txtJson():
                 datetime.strptime(str(item[10]), "%Y%m%d")
                 .isoformat()) + "-07:00"
             obj["dataProvider"] = item[11]
-            #pdb.set_trace()
-
             obj["with"].append(str(item[7]))
             obj["evidence"]["evidenceCode"] = item[8].split(",")
 
@@ -81,8 +61,6 @@ def txtJson():
             "dataProvider": "SGD"
         }
     }
-    pdb.set_trace()
-    #jstr = json.dumps(temp_data)
     with open('./scripts/bgi_json/data_dump/disease/new_obj.json', 'w+') as res_file:
         res_file.write(data_obj)
 if __name__ == '__main__':
