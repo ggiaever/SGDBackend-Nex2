@@ -726,25 +726,21 @@ def index_not_mapped_genes():
 def index_downloads():
     bulk_data = []
 
-    # TEMP test object
-    obj = {
-        'name': 'test download',
-        'href': '/downloads/TEMP',
-        'category': 'download',
-        'description': 'the first test download test phrase FASTA'
-    }
-    bulk_data.append({
-        'index': {
-            '_index': INDEX_NAME,
-            '_type': DOC_TYPE,
-            '_id': 'testdownload'
-        }
-    })
-    bulk_data.append(obj)
-
     files = DBSession.query(Filedbentity).filter(and_(Filedbentity.s3_url != None, Filedbentity.is_public==True))
     for x in files:
-        print(x)
+        obj = {
+            'name': x.display_name,
+            'href': x.s3_url,
+            'category': 'download'
+        }
+        bulk_data.append({
+            'index': {
+                '_index': INDEX_NAME,
+                '_type': DOC_TYPE,
+                '_id': x.sgdid
+            }
+        })
+        bulk_data.append(obj)
 
     if len(bulk_data) > 0:
         es.bulk(index=INDEX_NAME, body=bulk_data, refresh=True)
@@ -767,7 +763,7 @@ def index_part_2():
     index_references()
 
 if __name__ == '__main__':
-    # TEMP
+    # TEMP just downloads
     index_downloads()
 
 
