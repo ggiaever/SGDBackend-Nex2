@@ -1,4 +1,4 @@
-from src.models import DBSession, Base, Colleague, ColleagueLocus, Dbentity, Locusdbentity, LocusAlias, Dnasequenceannotation, So, Locussummary, Phenotypeannotation, PhenotypeannotationCond, Phenotype, Goannotation, Go, Goslimannotation, Goslim, Apo, Straindbentity, Strainsummary, Reservedname, GoAlias, Goannotation, Referencedbentity, Referencedocument, Referenceauthor, ReferenceAlias, Chebi
+from src.models import DBSession, Base, Colleague, ColleagueLocus, Dbentity, Filedbentity, Locusdbentity, LocusAlias, Dnasequenceannotation, So, Locussummary, Phenotypeannotation, PhenotypeannotationCond, Phenotype, Goannotation, Go, Goslimannotation, Goslim, Apo, Straindbentity, Strainsummary, Reservedname, GoAlias, Goannotation, Referencedbentity, Referencedocument, Referenceauthor, ReferenceAlias, Chebi
 from sqlalchemy import create_engine, and_
 from elasticsearch import Elasticsearch
 from mapping import mapping
@@ -723,6 +723,33 @@ def index_not_mapped_genes():
     if len(bulk_data) > 0:
         es.bulk(index=INDEX_NAME, body=bulk_data, refresh=True)
 
+def index_downloads():
+    bulk_data = []
+
+    # TEMP test object
+    obj = {
+        'name': 'test download',
+        'href': '/downloads/TEMP',
+        'category': 'download',
+        'description': 'the first test download test phrase FASTA'
+    }
+    bulk_data.append({
+        'index': {
+            '_index': INDEX_NAME,
+            '_type': DOC_TYPE,
+            '_id': 'testdownload'
+        }
+    })
+    bulk_data.append(obj)
+
+    files = DBSession.query(Filedbentity).filter(and_(Filedbentity.s3_url != None, Filedbentity.is_public==True))
+    for x in files:
+        print(x)
+
+    if len(bulk_data) > 0:
+        es.bulk(index=INDEX_NAME, body=bulk_data, refresh=True)
+
+
 def index_part_1():
     index_not_mapped_genes()
     index_genes()
@@ -740,9 +767,13 @@ def index_part_2():
     index_references()
 
 if __name__ == '__main__':
-    # cleanup()
-    setup()
-    t1 = Thread(target=index_part_1)
-    t2 = Thread(target=index_part_2)
-    t1.start()
-    t2.start()
+    # TEMP
+    index_downloads()
+
+
+    # # cleanup()
+    # setup()
+    # t1 = Thread(target=index_part_1)
+    # t2 = Thread(target=index_part_2)
+    # t1.start()
+    # t2.start()
