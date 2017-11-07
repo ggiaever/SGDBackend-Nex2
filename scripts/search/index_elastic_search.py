@@ -731,7 +731,8 @@ def index_downloads():
         obj = {
             'name': x.display_name,
             'href': x.s3_url,
-            'category': 'download'
+            'category': 'download',
+            'description': x.description
         }
         bulk_data.append({
             'index': {
