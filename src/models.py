@@ -2041,6 +2041,7 @@ class Filedbentity(Dbentity):
     description = Column(String(4000))
     json = Column(Text)
     year = Column(SmallInteger, nullable=False)
+    file_size = Column(Integer)
 
     data = relationship(u'Edam', primaryjoin='Filedbentity.data_id == Edam.edam_id')
     format = relationship(u'Edam', primaryjoin='Filedbentity.format_id == Edam.edam_id')
