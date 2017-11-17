@@ -79,6 +79,7 @@ def create_and_upload_file(obj, row_num):
             )
             db_session.flush()
         else:
+            existing.display_name = obj['display_name']
             existing.description = obj['description']
             existing.status = obj['status']
             existing.is_public = obj['is_public']
@@ -147,21 +148,21 @@ def load_csv_filedbentities():
             else:
                 raw_date = None
             obj = {
-                'bun_path': val[0],
-                'new_path': val[1],
-                'display_name': val[3],
-                'status': val[4].replace('Archive', 'Archived'),
-                'source': val[5],
-                'topic_edam_id': val[7].upper().replace('TOPIC', 'EDAM'),
-                'data_edam_id': val[9].upper().replace('DATA', 'EDAM'),
-                'format_edam_id': val[11].upper().replace('FORMAT', 'EDAM'),
-                'file_extension': val[12],
+                'bun_path': val[0].strip(),
+                'new_path': val[1].strip(),
+                'display_name': val[3].strip(),
+                'status': val[4].replace('Archive', 'Archived').strip(),
+                'source': val[5].strip(),
+                'topic_edam_id': val[7].upper().replace('TOPIC', 'EDAM').strip(),
+                'data_edam_id': val[9].upper().replace('DATA', 'EDAM').strip(),
+                'format_edam_id': val[11].upper().replace('FORMAT', 'EDAM').strip(),
+                'file_extension': val[12].strip(),
                 'file_date': raw_date,
                 'is_public': (val[15] == '1'),
                 'is_in_spell': (val[16] == '1'),
                 'is_in_browser': (val[17] == '1'),
                 'readme_name': val[18],
-                'description': val[19],
+                'description': val[19].decode('utf-8', 'ignore'),
                 'pmids': val[20]
             }
             create_and_upload_file(obj, i)
