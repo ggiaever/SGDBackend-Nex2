@@ -846,13 +846,17 @@ class Colleague(Base):
     def to_dict_basic_data(self):
         _dict = {
             "colleague_id": self.colleague_id,
-            "email": self.email,
+            "email": self.email if self.display_email else None,
             "format_name": self.format_name,
             "name": self.display_name,
             "link": self.obj_url,
             "institution": self.institution,
             "state": self.state,
+            "city": self.city,
             "country": self.country,
+            "address1": self.address1,
+            "address2": self.address2,
+            "address3": self.address3
         }
         return _dict
     def to_dict(self):
@@ -864,7 +868,7 @@ class Colleague(Base):
             "last_name": self.last_name,
             "suffix": self.suffix,
             "institution": self.institution,
-            "email": self.email,
+            "email": self.email if self.display_email else None,
             "link": self.obj_url,
             "profession": self.profession,
             "state": self.state,
@@ -876,18 +880,22 @@ class Colleague(Base):
             "work_phone": self.work_phone,
             "other_phone": self.other_phone,
             "format_name": self.format_name,
-            "name": self.display_name
+            "name": self.display_name,
+            "address1": self.address1,
+            "address2": self.address2,
+            "address3": self.address3,
+            "colleague_note": self.colleague_note
         }
         coll_url = self.get_collegue_url()
         _dict["lab_page"] = ''
         _dict["research_page"] = ''
         if coll_url is not None:
-            
+
             if coll_url.url_type == "Research summary":
                 _dict["research_page"] = coll_url.obj_url
             if coll_url.url_type == "Lab":
                 _dict["lab_page"] = coll_url.obj_url
-           
+
         keyword_ids = DBSession.query(ColleagueKeyword.keyword_id).filter(ColleagueKeyword.colleague_id == self.colleague_id).all()
         if len(keyword_ids) > 0:
             ids_query = [k[0] for k in keyword_ids]
@@ -1930,15 +1938,23 @@ class Referencedbentity(Dbentity):
                     comment = None
                 raw_genes = tag['genes'].strip()
                 gene_ids = []
+                
                 # add tags by gene
                 if len(raw_genes):
                     gene_ids = raw_genes.strip().split()
+                    # ignore duplicates
+                    gene_ids = list(set(gene_ids))
+                    tag_dbentity_ids = []
                     for g_id in gene_ids:
                         g_id = g_id.strip()
                         if g_id == '':
                             continue
                         upper_g_id = g_id.upper()
                         gene_dbentity_id = curator_session.query(Locusdbentity.dbentity_id).filter(or_(Locusdbentity.display_name == upper_g_id, Locusdbentity.format_name == g_id)).one_or_none()[0]
+                        # ignore duplicates
+                        if gene_dbentity_id in tag_dbentity_ids:
+                            continue
+                        tag_dbentity_ids.append(gene_dbentity_id)
                         curation_ref = CurationReference.factory(self.dbentity_id, name, comment, gene_dbentity_id, username)
                         if curation_ref:
                             curator_session.add(curation_ref)
@@ -1966,16 +1982,44 @@ class Referencedbentity(Dbentity):
                             else:
                                 has_omics = True
                         curator_session.add(lit_annotation)
-
-            curator_session.flush()
             transaction.commit()
         except Exception, e:
             traceback.print_exc()
+            transaction.abort()
             curator_session.rollback()
             raise(e)
         finally:
             if curator_session:
-                curator_session.remove()
+                curator_session.close()
+
+class FilePath(Base):
+    __tablename__ = 'file_path'
+    __table_args__ = {u'schema': 'nex'}
+
+    file_path_id = Column(BigInteger, primary_key=True, server_default=text("nextval('nex.object_seq'::regclass)"))
+    file_id = Column(ForeignKey(u'nex.filedbentity.dbentity_id', ondelete=u'CASCADE'), nullable=False, index=True)
+    path_id = Column(ForeignKey(u'nex.path.path_id', ondelete=u'CASCADE'), nullable=False, index=True)
+    source_id = Column(ForeignKey(u'nex.source.source_id', ondelete=u'CASCADE'), nullable=False, index=True)
+    date_created = Column(DateTime, nullable=False, server_default=text("('now'::text)::timestamp without time zone"))
+    created_by = Column(String(12), nullable=False)
+
+    source = relationship(u'Source')
+
+class Path(Base):
+    __tablename__ = 'path'
+    __table_args__ = (
+        UniqueConstraint('path_id', 'path'),
+        {u'schema': 'nex'}
+    )
+
+    path_id = Column(BigInteger, primary_key=True, server_default=text("nextval('nex.url_seq'::regclass)"))
+    source_id = Column(ForeignKey(u'nex.source.source_id', ondelete=u'CASCADE'), nullable=False, index=True)
+    path = Column(String(500), nullable=False)
+    description = Column(String(1000), nullable=False)
+    date_created = Column(DateTime, nullable=False, server_default=text("('now'::text)::timestamp without time zone"))
+    created_by = Column(String(12), nullable=False)
+
+    source = relationship(u'Source')
 
 class FilePath(Base):
     __tablename__ = 'file_path'
@@ -3906,10 +3950,10 @@ class Locusdbentity(Dbentity):
                 curator_session.query(Locussummary).filter_by(summary_id=summary.summary_id).update({ 'text': text, 'html': summary_html })
             else:
                 new_summary = Locussummary(
-                    locus_id = self.dbentity_id, 
-                    summary_type = summary_type, 
-                    text = text, 
-                    html = summary_html, 
+                    locus_id = self.dbentity_id,
+                    summary_type = summary_type,
+                    text = text,
+                    html = summary_html,
                     created_by = username,
                     source_id = SGD_SOURCE_ID
                 )
@@ -3933,13 +3977,13 @@ class Locusdbentity(Dbentity):
                         curator_session.query(LocussummaryReference).filter_by(summary_id=summary_id,reference_id=reference_id).update({ 'reference_order': order })
                     else:
                         new_locussummaryref = LocussummaryReference(
-                            summary_id = summary_id, 
-                            reference_id = reference_id, 
-                            reference_order = order, 
-                            source_id = SGD_SOURCE_ID, 
+                            summary_id = summary_id,
+                            reference_id = reference_id,
+                            reference_order = order,
+                            source_id = SGD_SOURCE_ID,
                             created_by = username
                         )
-                        curator_session.add(new_locussummaryref)          
+                        curator_session.add(new_locussummaryref)
             # commit and close session to keep user session out of connection pool
             transaction.commit()
             return text
@@ -6367,46 +6411,49 @@ class Phenotypeannotation(Base):
 
         groups = {}
 
-        for condition in conditions:
-            if condition.condition_class == "chemical":
-                if chemical is not None and (chemical.display_name == condition.condition_name):
+        for condition_item in conditions:
+            if condition_item.condition_class == "chemical":
+                if chemical is not None and (chemical.display_name == condition_item.condition_name):
                     chebi_url = chemical.obj_url
                 else:
                     if chebi_urls == None:
-                        chebi_url = DBSession.query(Chebi.obj_url).filter_by(display_name=condition.condition_name).one_or_none()
+                        chebi_url = DBSession.query(Chebi.obj_url).filter_by(display_name=condition_item.condition_name).one_or_none()
                     else:
-                        chebi_url = chebi_urls.get(condition.condition_name)
+                        chebi_url = chebi_urls.get(
+                            condition_item.condition_name)
 
                 link = None
                 if chebi_url:
                     link = chebi_url
 
-                if condition.group_id not in groups:
-                    groups[condition.group_id] = []
+                if condition_item.group_id not in groups:
+                    groups[condition_item.group_id] = []
 
-                groups[condition.group_id].append({
+                groups[condition_item.group_id].append({
                     "class_type": "CHEMICAL",
-                    "concentration": condition.condition_value,
+                    "concentration": condition_item.condition_value,
                     "bioitem": {
                         "link": link,
-                        "display_name": condition.condition_name
+                        "display_name": condition_item.condition_name
                     },
                     "note": None,
-                    "role": "CHEMICAL"
+                    "role": "CHEMICAL",
+                    "unit": condition_item.condition_unit
                 })
             else:
-                note = condition.condition_name
-                if condition.condition_value:
-                    note += ", " + condition.condition_value
-                    if condition.condition_unit:
-                        note += " " + condition_unit
+                note = condition_item.condition_name
+                if condition_item.condition_value:
+                    note += ", " + condition_item.condition_value
+                    if condition_item.condition_unit:
+                        note += " " + condition_item.condition_unit
 
-                if condition.group_id not in groups:
-                    groups[condition.group_id] = []
+                if condition_item.group_id not in groups:
+                    groups[condition_item.group_id] = []
 
-                groups[condition.group_id].append({
-                    "class_type": condition.condition_class,
-                    "note": note
+                groups[condition_item.group_id].append({
+                    "class_type": condition_item.condition_class,
+                    "note": note,
+                    "unit": condition_item.condition_unit
                 })
 
         if chemical:
@@ -7757,12 +7804,17 @@ def validate_tags(tags):
     additional_obj = {}
     review_obj = {}
     extra_obj = {} # tracks if in extra topics and might add additional tag for that gene
+    high_priority_obj = {}
     gene_ids = []
+    has_reviews = False
     for tag in tags:
         name = tag['name']
         is_primary = Literatureannotation.is_primary_tag(name)
         is_additional = (name == 'additional_literature')
         is_reviews = (name == 'reviews')
+        if is_reviews:
+            has_reviews = True
+        is_high_priority = (name == 'high_priority')
         genes = tag['genes'].strip()
         if len(genes):
             t_gene_ids = genes.split()
@@ -7781,6 +7833,8 @@ def validate_tags(tags):
                     review_obj[g] = True
                 if name in extra_tag_list:
                     extra_obj[g] = True
+                if is_high_priority:
+                    high_priority_obj[g] = True
             gene_ids = gene_ids + t_gene_ids
         elif is_primary or is_additional:
             raise ValueError('Primary and additional tags must have genes.')
@@ -7788,11 +7842,12 @@ def validate_tags(tags):
     p_keys = primary_obj.keys()
     a_keys = additional_obj.keys()
     r_keys = review_obj.keys()
-    if (len(r_keys) > 0 and (len(p_keys) + len(a_keys)) > 0):
+    if (has_reviews > 0 and (len(p_keys) + len(a_keys)) > 0):
         raise ValueError('Review tags are mutually exclusive with primary and additional tags.')
     unique_keys = set(p_keys + a_keys + r_keys)
     extra_keys = set(extra_obj.keys())
-    all_keys = list(set(list(unique_keys) + list(extra_keys)))
+    high_priority_keys = set(high_priority_obj.keys())
+    all_keys = list(set(list(unique_keys) + list(extra_keys) + list(high_priority_keys)))
     # upper_all_keys = [x.upper() for x in all_keys]
     if len(unique_keys) != (len(p_keys) + len(a_keys) + len(r_keys)):
         raise ValueError('The same gene can only be used as a primary tag, additional tag, or review.')
@@ -7816,7 +7871,7 @@ def validate_tags(tags):
     for x in extra_keys:
         if x not in unique_keys:
             new_additional_genes.append(x)
-    if len(new_additional_genes) and (len(r_keys) == 0):
+    if len(new_additional_genes) and not has_reviews:
         new_additional_str = SEPARATOR.join(new_additional_genes)
         # see if additional tag exists, if not create it
         is_added_to_existing = False

@@ -66,23 +66,31 @@ def locus_curate_update(request):
 def reference_triage_id_delete(request):
     id = request.matchdict['id'].upper()
     triage = DBSession.query(Referencetriage).filter_by(curation_id=id).one_or_none()
+    curator_session = None
     if triage:
         try:
             curator_session = get_curator_session(request.session['username'])
             triage = curator_session.query(Referencetriage).filter_by(curation_id=id).one_or_none()
-            reference_deleted = Referencedeleted(pmid=triage.pmid, sgdid=None, reason_deleted='This paper was discarded during literature triage.', created_by=request.session['username'])
-            curator_session.add(reference_deleted)
+            # only add referencedeleted if reference not in referencedbentity (allow curators to delete a reference that was added to DB but failed to removed from referencetriage)
+            existing_ref = curator_session.query(Referencedbentity).filter_by(pmid=triage.pmid).one_or_none()
+            if not existing_ref:
+                reference_deleted = Referencedeleted(pmid=triage.pmid, sgdid=None, reason_deleted='This paper was discarded during literature triage.', created_by=request.session['username'])
+                curator_session.add(reference_deleted)
+            else:
+                log.warning(str(triage.pmid) + ' was removed from Referencedbentity but no Referencedeleted was added.')
             curator_session.delete(triage)        
             transaction.commit()
             pusher = get_pusher_client()
             pusher.trigger('sgd', 'triageUpdate', {})
             return HTTPOk()
-        except:
-            traceback.print_exc()
-            curator_session.rollback()
+        except Exception as e:
+            if curator_session:
+                curator_session.rollback()
+            log.error(e)
             return HTTPBadRequest(body=json.dumps({'error': 'DB failure. Verify that PMID is valid and not already present in SGD.'}))
         finally:
-            curator_session.remove()
+            if curator_session:
+                curator_session.remove()
     else:
         return HTTPNotFound()
 
@@ -128,6 +136,9 @@ def reference_triage_promote(request):
     id = request.matchdict['id'].upper()
     triage = DBSession.query(Referencetriage).filter_by(curation_id=id).one_or_none()
     new_reference_id = None
+    existing_ref = DBSession.query(Referencedbentity).filter_by(pmid=triage.pmid).one_or_none()
+    if existing_ref:
+        return HTTPBadRequest(body=json.dumps({'error': 'The reference already exists in the database. You may need to discard from triage after verifying.' }))
     if triage:
         # promote
         try:
@@ -136,11 +147,11 @@ def reference_triage_promote(request):
             DBSession.delete(triage)
             transaction.commit()
         except IntegrityError as e:
-            traceback.print_exc()
+            log.error(e)
             DBSession.rollback()
             return HTTPBadRequest(body=json.dumps({'error': str(e) }))
-        except:
-            traceback.print_exc()
+        except Exception as e:
+            log.error(e)
             return HTTPBadRequest(body=json.dumps({'error': 'Error importing PMID into the database. Verify that PMID is valid and not already present in SGD.'}))
         # update tags
         try:
@@ -148,7 +159,7 @@ def reference_triage_promote(request):
             new_reference = curator_session.query(Referencedbentity).filter_by(dbentity_id=new_reference_id).one_or_none()
             new_reference.update_tags(tags, username)
         except IntegrityError as e:
-            traceback.print_exc()
+            log.error(e)
             curator_session.rollback()
         finally:
             curator_session.remove()
@@ -276,7 +287,7 @@ def update_reference_tags(request):
         curator_session.remove()
         return processed_tags
     except Exception, e:
-        traceback.print_exc()
+        log.error(e)
         return HTTPBadRequest(body=json.dumps({ 'error': str(e) }), content_type='text/json')
 
 @view_config(route_name='get_recent_annotations', request_method='GET', renderer='json')
