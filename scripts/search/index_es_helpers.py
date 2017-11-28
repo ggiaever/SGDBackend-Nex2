@@ -1,4 +1,4 @@
-from src.models import DBSession, Base, Colleague, ColleagueLocus, Dbentity, Locusnote, LocusnoteReference, Locusdbentity, LocusAlias, Dnasequenceannotation, So, Locussummary, Phenotypeannotation, PhenotypeannotationCond, Phenotype, Goannotation, Go, Goslimannotation, Goslim, Apo, Straindbentity, Strainsummary, Reservedname, GoAlias, Goannotation, Referencedbentity, Referencedocument, Referenceauthor, ReferenceAlias, Chebi
+from src.models import DBSession, Base, Colleague, ColleagueLocus, Dbentity, Locusnote, Filedbentity, FileKeyword, LocusnoteReference, Locusdbentity, LocusAlias, Dnasequenceannotation, So, Locussummary, Phenotypeannotation, PhenotypeannotationCond, Phenotype, Goannotation, Go, Goslimannotation, Goslim, Apo, Straindbentity, Strainsummary, Reservedname, GoAlias, Goannotation, Referencedbentity, Referencedocument, Referenceauthor, ReferenceAlias, Chebi
 from sqlalchemy import create_engine, and_
 from elasticsearch import Elasticsearch
 from mapping import mapping
@@ -489,3 +489,31 @@ class IndexESHelper:
                     obj[item2[1].reference_id] = []
                 obj[item2[1].reference_id].append(temp)
         return obj
+
+    @classmethod
+    def get_file_dbentity_keyword(cls):
+        obj = {}
+        _data = DBSession.query(
+            Filedbentity, FileKeyword).join(FileKeyword).filter(
+                Filedbentity.dbentity_id == FileKeyword.file_id).all()
+        for item in _data:
+            if (item):
+                if item[0].dbentity_id not in obj:
+                    obj[item[0].dbentity_id] = []
+                obj[item[0].dbentity_id].append(item[1].keyword.display_name)
+
+        return obj
+
+    @classmethod
+    def convertBytes(cls, numBytes, suffix='B'):
+        '''
+        Convert bytes to human readable unit
+        '''
+        if numBytes is not None or numBytes > 0:
+            units = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z']
+            for item in units:
+                if abs(numBytes) < 1024.0:
+                    return "%3.1f%s%s" % (numBytes, item, suffix)
+                numBytes /= 1024.0
+            return "%.1f%s%s" % (numBytes, 'Y', suffix)
+        return None

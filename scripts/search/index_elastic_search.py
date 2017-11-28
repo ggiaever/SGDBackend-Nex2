@@ -1,4 +1,4 @@
-from src.models import DBSession, Base, Colleague, ColleagueLocus, Dbentity, Locusdbentity, LocusAlias, Dnasequenceannotation, So, Locussummary, Phenotypeannotation, PhenotypeannotationCond, Phenotype, Goannotation, Go, Goslimannotation, Goslim, Apo, Straindbentity, Strainsummary, Reservedname, GoAlias, Goannotation, Referencedbentity, Referencedocument, Referenceauthor, ReferenceAlias, Chebi
+from src.models import DBSession, Base, Colleague, ColleagueLocus, Dbentity, Locusdbentity, Filedbentity, FileKeyword, LocusAlias, Dnasequenceannotation, So, Locussummary, Phenotypeannotation, PhenotypeannotationCond, Phenotype, Goannotation, Go, Goslimannotation, Goslim, Apo, Straindbentity, Strainsummary, Reservedname, GoAlias, Goannotation, Referencedbentity, Referencedocument, Referenceauthor, ReferenceAlias, Chebi
 from sqlalchemy import create_engine, and_
 from elasticsearch import Elasticsearch
 from mapping import mapping
@@ -723,7 +723,67 @@ def index_not_mapped_genes():
     if len(bulk_data) > 0:
         es.bulk(index=INDEX_NAME, body=bulk_data, refresh=True)
 
+
+def index_downloads():
+    bulk_data = []
+    dbentity_file_obj = IndexESHelper.get_file_dbentity_keyword()
+    files = DBSession.query(Filedbentity).filter(
+        Filedbentity.is_public == True,
+        Filedbentity.readme_file_id != None).all()
+    for x in files:
+        keyword = []
+        status = ''
+        temp = dbentity_file_obj.get(x.dbentity_id)
+        if temp:
+            keyword = temp
+        if (x.dbentity_status == "Active" or x.dbentity_status == "Archived"):
+            if x.dbentity_status == "Active":
+                status = "Active"
+            else:
+                status = "Archived"
+        
+        obj = {
+            'name':
+                x.display_name,
+            'href':
+                x.s3_url,
+            'category':
+                'download',
+            'description':
+                x.description,
+            'keyword':
+                keyword,
+            'format':
+                str(x.format.display_name),
+            'status':
+                str(status),
+            'file_size':
+                str(IndexESHelper.convertBytes(x.file_size))
+                if x.file_size is not None else x.file_size,
+            'year':
+                str(x.year),
+            'readme_url':
+                x.readme_file[0].s3_url
+        }
+        bulk_data.append({
+            'index': {
+                '_index': INDEX_NAME,
+                '_type': DOC_TYPE,
+                '_id': x.sgdid
+            }
+        })
+
+        bulk_data.append(obj)
+        if len(bulk_data) == 50:
+            es.bulk(index=INDEX_NAME, body=bulk_data, refresh=True)
+            bulk_data = []
+
+    if len(bulk_data) > 0:
+        es.bulk(index=INDEX_NAME, body=bulk_data, refresh=True)
+
+
 def index_part_1():
+    index_downloads()
     index_not_mapped_genes()
     index_genes()
     index_strains()
@@ -740,7 +800,7 @@ def index_part_2():
     index_references()
 
 if __name__ == '__main__':
-    # cleanup()
+    cleanup()
     setup()
     t1 = Thread(target=index_part_1)
     t2 = Thread(target=index_part_2)
