@@ -127,6 +127,7 @@ def main(global_config, **settings):
     config.add_route('extensions', '/extensions')
     config.add_route('upload', '/upload')
     config.add_route('upload_spreadsheet', '/upload_spreadsheet', request_method='POST')
+    config.add_route('new_gene_name_reservation', '/reserve', request_method='POST')
 
     config.add_route('healthcheck', '/healthcheck')
 
