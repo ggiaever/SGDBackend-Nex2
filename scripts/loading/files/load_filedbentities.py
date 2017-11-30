@@ -32,7 +32,6 @@ def create_and_upload_file(obj, row_num):
         local_file_path = LOCAL_FILE_DIRECTORY + '/' + obj['bun_path']
         # special transformations
         local_file_path = local_file_path.replace('feature/', 'features/')
-        local_file_path = local_file_path.replace('genome-sequences/', '/genome-sequences/')
         local_file = open(local_file_path)
     except IOError:
         logging.error('error opening file ' + str(row_num))
@@ -148,11 +147,21 @@ def load_csv_filedbentities():
                 raw_date = datetime.strptime(val[13], '%Y-%m-%d')
             else:
                 raw_date = None
+            raw_status = val[4].strip()
+            if raw_status == 'Archive':
+                raw_status = 'Archived'
+
+            bun_path = val[0].strip()
+            new_path = val[1].strip()
+            if bun_path[0] != '/':
+                bun_path = bun_path.replace('genome-sequences/', '/genome-sequences/')
+            if new_path[0] != '/':
+                new_path = new_path.replace('genome-sequences/', '/genome-sequences/')
             obj = {
-                'bun_path': val[0].strip(),
-                'new_path': val[1].strip().replace('genome-sequences/', '/genome-sequences/'),
+                'bun_path': bun_path,
+                'new_path': new_path,
                 'display_name': val[3].strip(),
-                'status': val[4].replace('Archive', 'Archived').strip(),
+                'status': raw_status,
                 'source': val[5].strip(),
                 'topic_edam_id': val[7].upper().replace('TOPIC', 'EDAM').strip(),
                 'data_edam_id': val[9].upper().replace('DATA', 'EDAM').strip(),
