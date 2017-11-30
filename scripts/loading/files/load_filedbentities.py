@@ -32,6 +32,7 @@ def create_and_upload_file(obj, row_num):
         local_file_path = LOCAL_FILE_DIRECTORY + '/' + obj['bun_path']
         # special transformations
         local_file_path = local_file_path.replace('feature/', 'features/')
+        local_file_path = local_file_path.replace('genome-sequences/', '/genome-sequences/')
         local_file = open(local_file_path)
     except IOError:
         logging.error('error opening file ' + str(row_num))
@@ -149,7 +150,7 @@ def load_csv_filedbentities():
                 raw_date = None
             obj = {
                 'bun_path': val[0].strip(),
-                'new_path': val[1].strip(),
+                'new_path': val[1].strip().replace('genome-sequences/', '/genome-sequences/'),
                 'display_name': val[3].strip(),
                 'status': val[4].replace('Archive', 'Archived').strip(),
                 'source': val[5].strip(),
