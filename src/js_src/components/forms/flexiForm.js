@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import t from 'tcomb-form';
+import semantic from 'tcomb-form-templates-semantic';
 
 import Loader from '../loader';
 import { setError, clearError } from '../../actions/metaActions';
@@ -42,6 +43,7 @@ class FlexiForm extends Component {
   render() {
     if (this.state.isPending) return <Loader />;
     let submitText = this.props.submitText || 'Update';
+    t.form.Form.templates = semantic;
     return (
       <form className='sgd-curate-form' onSubmit={this.handleSubmit.bind(this)}>
         <t.form.Form options={this.props.tFormOptions} ref={input => this.formInput = input} type={this.props.tFormSchema} value={this.state.data} />
