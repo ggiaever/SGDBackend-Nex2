@@ -12,7 +12,7 @@ class FlexiForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
+      data: props.defaultData,
       isPending: false
     };
   }
@@ -56,6 +56,7 @@ class FlexiForm extends Component {
 }
 
 FlexiForm.propTypes = {
+  defaultData: React.PropTypes.object,
   dispatch: React.PropTypes.func,
   getUrl: React.PropTypes.string,
   onSuccess: React.PropTypes.func,// (data) =>
