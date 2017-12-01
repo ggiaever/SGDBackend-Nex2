@@ -3,7 +3,7 @@ import os
 import logging
 from datetime import datetime
 from src.helpers import upload_file
-from src.models import DBSession, Edam, Filedbentity, FilePath, Path, Referencedbentity, ReferenceFile, Source
+from src.models import DBSession, Edam, Filedbentity, FileKeyword, FilePath, Path, Referencedbentity, ReferenceFile, Source
 from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -124,6 +124,18 @@ def create_and_upload_file(obj, row_num):
                     db_session.add(new_ref_file)
                 transaction.commit()
                 db_session.flush()
+        # maybe add keywords
+        if len(obj['keywords']):
+            existing = db_session.query(Filedbentity).filter(Filedbentity.display_name == obj['display_name']).one_or_none()
+            keywords = obj['keywords'].split('|')
+            for x  in keywords:
+                x = int(x.strip())
+                existing_file_keyword = db_session.query(FileKeyword).filter(FileKeyword.file_id==existing.dbentity_id).one_or_none()
+                if not existing_file_keyword:
+                    new_file_keyword = FileKeyword(created_by=CREATED_BY, file_id=existing.dbentity_id, keyword_id=x, source_id=SGD_SOURCE_ID)
+                    db_session.add(new_file_keyword)
+                transaction.commit()
+                db_session.flush()
         logging.info('finished ' + obj['display_name'] + ', line ' + str(row_num))
     except:
         logging.error('error with ' + obj['display_name']+ ' in row ' + str(row_num))
@@ -173,7 +185,8 @@ def load_csv_filedbentities():
                 'is_in_browser': (val[17] == '1'),
                 'readme_name': val[18],
                 'description': val[19].decode('utf-8', 'ignore'),
-                'pmids': val[20]
+                'pmids': val[20],
+                'keywords': val[21]
             }
             create_and_upload_file(obj, i)
 
