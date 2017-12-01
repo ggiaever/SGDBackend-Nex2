@@ -3,7 +3,7 @@ import os
 import logging
 from datetime import datetime
 from src.helpers import upload_file
-from src.models import DBSession, Edam, Filedbentity, FileKeyword, FilePath, Path, Referencedbentity, ReferenceFile, Source
+from src.models import DBSession, Edam, Filedbentity, FileKeyword, FilePath, Keyword, Path, Referencedbentity, ReferenceFile, Source
 from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -130,9 +130,10 @@ def create_and_upload_file(obj, row_num):
             keywords = obj['keywords'].split('|')
             for x  in keywords:
                 x = int(x.strip())
-                existing_file_keyword = db_session.query(FileKeyword).filter(FileKeyword.file_id==existing.dbentity_id).one_or_none()
+                keyword = db_session.query(Keyword).filter(Keyword.display_name==x).one_or_none()
+                existing_file_keyword = db_session.query(FileKeyword).filter(and_(FileKeyword.file_id==existing.dbentity_id, FileKeyword.keyword_id==keyword.keyword_id)).one_or_none()
                 if not existing_file_keyword:
-                    new_file_keyword = FileKeyword(created_by=CREATED_BY, file_id=existing.dbentity_id, keyword_id=x, source_id=SGD_SOURCE_ID)
+                    new_file_keyword = FileKeyword(created_by=CREATED_BY, file_id=existing.dbentity_id, keyword_id=keyword.keyword_id, source_id=SGD_SOURCE_ID)
                     db_session.add(new_file_keyword)
                 transaction.commit()
                 db_session.flush()
