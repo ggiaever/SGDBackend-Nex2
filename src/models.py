@@ -7380,6 +7380,7 @@ class Reservedname(Base):
         if self.locus:
             obj["locus"] = {
                 "display_name": self.locus.display_name,
+                "systematic_name": self.locus.systematic_name,
                 "link": self.locus.obj_url
             }
 
