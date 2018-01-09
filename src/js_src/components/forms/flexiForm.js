@@ -19,12 +19,13 @@ class FlexiForm extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    let value = JSON.stringify(this.formInput.getValue());
+    let value = this.formInput.getValue();
+    let strValue = JSON.stringify(value);
     let method = this.props.requestMethod || 'PUT';
-    this.setState({ isPending: true });
+    this.setState({ isPending: true, data: value });
     let formOptions = {
       type: method,
-      data: value,
+      data: strValue,
       contentType: 'application/json',
       headers: {
         'X-CSRF-Token': window.CSRF_TOKEN
