@@ -19,12 +19,13 @@ class FlexiForm extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    let value = this.formInput.getValue();
-    let method = this.state.data ? 'PUT' : 'POST';
+    let value = JSON.stringify(this.formInput.getValue());
+    let method = this.props.requestMethod || 'PUT';
     this.setState({ isPending: true });
     let formOptions = {
       type: method,
       data: value,
+      contentType: 'application/json',
       headers: {
         'X-CSRF-Token': window.CSRF_TOKEN
       }
@@ -61,6 +62,7 @@ FlexiForm.propTypes = {
   getUrl: React.PropTypes.string,
   onSuccess: React.PropTypes.func,// (data) =>
   submitText: React.PropTypes.string,
+  requestMethod: React.PropTypes.string,
   tFormSchema: React.PropTypes.func.isRequired,
   tFormOptions: React.PropTypes.object,
   updateUrl: React.PropTypes.string.isRequired,

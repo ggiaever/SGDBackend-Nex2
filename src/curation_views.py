@@ -187,11 +187,13 @@ def refresh_homepage_cache(request):
 
 @view_config(route_name='db_sign_in', request_method='POST', renderer='json')
 def db_sign_in(request):
+    Temp_session = None
     if not check_csrf_token(request, raises=False):
         return HTTPBadRequest(body=json.dumps({'error':'Bad CSRF Token'}))
     try:
-        username = request.params.get('username').lower()
-        password = request.params.get('password')
+        params = request.json_body
+        username = params.get('username').lower()
+        password = params.get('password')
         # create custom DB URI, replacing with username and password
         default_db_uri = os.environ['NEX2_URI']
         user_str = username + ':' + password + '@'
@@ -331,6 +333,13 @@ def upload_spreadsheet(request):
 def new_gene_name_reservation(request):
     if not check_csrf_token(request, raises=False):
         return HTTPBadRequest(body=json.dumps({'error':'Bad CSRF Token'}))
+    data = request.json_body
+
+    required_fields = ['new_gene_name', 'description', 'first_name', 'last_name', 'email', 'year']
+    for x in required_fields:
+        if not data[x]:
+            msg = x + ' is a required field.'
+            return HTTPBadRequest(body=json.dumps({ 'error': msg }), content_type='text/json')
     return True
 
 @view_config(route_name='reserved_name_index', renderer='json')
