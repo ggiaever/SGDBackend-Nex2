@@ -34,9 +34,9 @@ class FlexiForm extends Component {
       this.setState({ isPending: false });
       this.props.dispatch(clearError());
       if (this.props.onSuccess) this.props.onSuccess(data);
-    }).catch( () => {
+    }).catch( (data) => {
       this.setState({ isPending: false });
-      let errorMessage = 'Unable to login. Please verify your username and password are correct.';
+      let errorMessage = data ? data.error : 'Unable to login. Please verify your username and password are correct.';
       this.props.dispatch(setError(errorMessage));
     });
   }
