@@ -3900,7 +3900,7 @@ class Locusdbentity(Dbentity):
                 'feature_type': '', #TEMP todo
                 'gene_name': self.gene_name,
                 'name_description': self.name_description,
-                'qualifier': qualifier
+                'qualifier': self.qualifier
             }
         }
 
