@@ -128,8 +128,8 @@ def create_and_upload_file(obj, row_num):
         if len(obj['keywords']):
             existing = db_session.query(Filedbentity).filter(Filedbentity.display_name == obj['display_name']).one_or_none()
             keywords = obj['keywords'].split('|')
-            for x  in keywords:
-                x = int(x.strip())
+            for x in keywords:
+                x = x.strip()
                 keyword = db_session.query(Keyword).filter(Keyword.display_name==x).one_or_none()
                 existing_file_keyword = db_session.query(FileKeyword).filter(and_(FileKeyword.file_id==existing.dbentity_id, FileKeyword.keyword_id==keyword.keyword_id)).one_or_none()
                 if not existing_file_keyword:
