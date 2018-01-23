@@ -2061,11 +2061,13 @@ class Filedbentity(Dbentity):
         file_s3 = bucket.get_key(k.key)
         etag_md5_s3 = file_s3.etag.strip('"').strip("'")
         # if md5 checksum matches, save s3 URL to db
+        if self.md5sum is None:
+            self.md5sum = etag_md5_s3
         if (self.md5sum == etag_md5_s3):
             self.s3_url = file_s3.generate_url(expires_in=0, query_auth=False)
             transaction.commit()
         else:
-            DBSession.rollback()
+            transaction.abort()
             raise Exception('MD5sum check failed.')
 
     def get_path(self):
