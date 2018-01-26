@@ -14,7 +14,7 @@ import traceback
 
 '''
     Process a CSV file of downloads, create filedbentity entries, file_path entries, and 
-    finds the file on a local directory, then uploads to s3 and updates s3_path.
+    finds the file on the remote download server via SSH, then uploads to s3 and updates s3_path.
 
     example
         $ source dev_variables.sh && CREATED_BY=TSHEPP INPUT_FILE_NAME=/Users/travis/Desktop/meta_csvs/literature_file_metadata.csv python scripts/loading/files/load_filedbentities.py
