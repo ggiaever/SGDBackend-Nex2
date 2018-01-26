@@ -30,13 +30,12 @@ SGD_SOURCE_ID = 834
 
 logging.basicConfig(level=logging.INFO)
 
-def create_and_upload_file(obj, row_num, client):
+def create_and_upload_file(obj, row_num, sftp_client):
     try:
         # find on local system
         remote_file_path = DATA_DIR + '/' + obj['bun_path']
         # special transformations
         remote_file_path = remote_file_path.replace('feature/', 'features/')
-        sftp_client = client.open_sftp()
         remote_file = sftp_client.open(remote_file_path)
     except IOError:
         logging.error('error opening file ' + str(row_num))
@@ -161,6 +160,7 @@ def load_csv_filedbentities():
     username = input('Username [%s]: ' % default_username)
     password =  getpass.getpass('Password for %s@%s: ' % (username, HOSTNAME))
     client.connect(HOSTNAME, 22, username, password, gss_auth=False, gss_kex=False)
+    sftp_client = client.open_sftp()
 
     o = open(INPUT_FILE_NAME,'rU')
     reader = csv.reader(o)
@@ -203,7 +203,7 @@ def load_csv_filedbentities():
                 'pmids': val[20],
                 'keywords': val[21]
             }
-            create_and_upload_file(obj, i, client)
+            create_and_upload_file(obj, i, sftp_client)
     client.close()
 
 if __name__ == '__main__':
