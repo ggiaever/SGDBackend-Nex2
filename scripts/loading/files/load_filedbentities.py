@@ -95,11 +95,6 @@ def create_and_upload_file(obj, row_num, sftp_client):
                 existing.year = obj['file_date'].year
             existing.readme_file_id = readme_file_id
             remote_file.seek(0, os.SEEK_END)
-            # update file size
-            file_size = remote_file.tell()
-            remote_file.seek(0)
-            existing.file_size = file_size
-
             transaction.commit()
             existing = db_session.query(Filedbentity).filter(Filedbentity.display_name == obj['display_name']).one_or_none()
             # only upload s3 file if not defined
