@@ -90,6 +90,12 @@ def create_and_upload_file(obj, row_num, sftp_client):
             existing.is_in_spell = obj['is_in_spell']
             existing.is_in_browser = obj['is_in_browser']
             existing.source_id = source_id
+            # update file size
+            if not existing.file_size and existing.s3_url:
+                remote_file.seek(0, os.SEEK_END)
+                file_size = remote_file.tell()
+                remote_file.seek(0)
+                existing.file_size = file_size
             if obj['file_date']:
                 existing.file_date = obj['file_date']
                 existing.year = obj['file_date'].year
