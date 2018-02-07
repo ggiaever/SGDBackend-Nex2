@@ -2,6 +2,8 @@ Welcome to SGD-Backend Project
 ==============================
 The main documentation of this project is divided into the following:
 
+.. _user-docs:
+
 .. toctree::
     :maxdepth: 2
     :caption: User Documentation
@@ -10,13 +12,17 @@ The main documentation of this project is divided into the following:
     road_map
     support
 
+.. _dev-docs:
+
 .. toctree::
     :maxdepth: 2
     :caption: Developer Documentation
 
-    development/development
+    development/standard
     development/testing
     api/index
+
+.. _release-docs:
 
 .. toctree::
     :maxdepth: 2
@@ -24,15 +30,11 @@ The main documentation of this project is divided into the following:
 
     release/release_process
     release/release_notes
+ 
+.. _guide-docs:
 
 .. toctree::
     :maxdepth: 2
     :caption: Guides
 
     guides/docker_guide
-
-
-
-
-
-
