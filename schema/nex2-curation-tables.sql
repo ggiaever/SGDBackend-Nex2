@@ -155,14 +155,14 @@ DROP TABLE IF EXISTS nex.reservednametriage CASCADE;
 CREATE TABLE nex.reservednametriage (
     curation_id bigint NOT NULL DEFAULT nextval('curation_seq'),
     proposed_gene_name varchar(20) NOT NULL,
-    user_email varchar(100) NOT NULL,
+    colleague_id bigint NOT NULL,
     json text NOT NULL,
     date_created timestamp NOT NULL DEFAULT LOCALTIMESTAMP,
     created_by varchar(12) NOT NULL,
     CONSTRAINT reservednametriage_pk PRIMARY KEY (curation_id)
 ) ;
 COMMENT ON TABLE nex.reservednametriage IS 'New gene name submissions.';
-COMMENT ON COLUMN nex.reservednametriage.user_email IS 'Email address of the user who submitted the gene name reservation.';
+COMMENT ON COLUMN nex.reservednametriage.colleague_id IS 'FK to COLLEAGUE.COLLEAGUE_ID.';
 COMMENT ON COLUMN nex.reservednametriage.proposed_gene_name IS 'Proposed gene name.';
 COMMENT ON COLUMN nex.reservednametriage.created_by IS 'Username of the person who entered the record into the database.';
 COMMENT ON COLUMN nex.reservednametriage.json IS 'JSON object of the reserved name data.';
