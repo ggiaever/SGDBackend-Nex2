@@ -309,6 +309,8 @@ ALTER TABLE nex.colleague_reference ADD CONSTRAINT colleaguereference_source_fk 
 ALTER TABLE nex.colleague_reference ADD CONSTRAINT colleaguereference_coll_fk FOREIGN KEY (colleague_id) REFERENCES colleague(colleague_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE nex.colleague_reference ADD CONSTRAINT colleaguereference_ref_fk FOREIGN KEY (reference_id) REFERENCES referencedbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 
+ALTER TABLE nex.colleaguetriage ADD CONSTRAINT colleaguetriage_coll_fk FOREIGN KEY (colleague_id) REFERENCES colleague(colleague_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+
 
 ALTER TABLE nex.contig ADD CONSTRAINT contig_genrel_fk FOREIGN KEY (genomerelease_id) REFERENCES genomerelease(genomerelease_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE nex.contig ADD CONSTRAINT contig_so_fk FOREIGN KEY (so_id) REFERENCES so(so_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
@@ -381,6 +383,8 @@ ALTER TABLE nex.reservedname ADD CONSTRAINT reservedname_coll_fk FOREIGN KEY (co
 ALTER TABLE nex.reservedname ADD CONSTRAINT reservedname_locus_fk FOREIGN KEY (locus_id) REFERENCES locusdbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE nex.reservedname ADD CONSTRAINT reservedname_ref_fk FOREIGN KEY (reference_id) REFERENCES referencedbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE nex.reservedname ADD CONSTRAINT reservedname_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE nex.reservednametriage ADD CONSTRAINT reservednametriage_coll_fk FOREIGN KEY (colleague_id) REFERENCES colleague(colleague_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 
 ALTER TABLE nex.proteindomain ADD CONSTRAINT proteindomain_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;

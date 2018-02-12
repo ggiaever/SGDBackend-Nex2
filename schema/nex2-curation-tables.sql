@@ -150,6 +150,8 @@ COMMENT ON COLUMN nex.colleaguetriage.date_created IS 'Date the record was enter
 COMMENT ON COLUMN nex.colleaguetriage.curation_id IS 'Unique identifier (serial number).';
 COMMENT ON COLUMN nex.colleaguetriage.curator_comment IS 'Notes or comments about this colleague entry by the curators.';
 ALTER TABLE nex.colleaguetriage ADD CONSTRAINT colleagetriage_type_ck CHECK (TRIAGE_TYPE IN ('New', 'Update', 'Stalled'));
+CREATE INDEX colleaguetriage_coll_fk_index ON nex.colleaguetriage (colleague_id);
+
 
 DROP TABLE IF EXISTS nex.reservednametriage CASCADE;
 CREATE TABLE nex.reservednametriage (
@@ -168,4 +170,4 @@ COMMENT ON COLUMN nex.reservednametriage.created_by IS 'Username of the person w
 COMMENT ON COLUMN nex.reservednametriage.json IS 'JSON object of the reserved name data.';
 COMMENT ON COLUMN nex.reservednametriage.date_created IS 'Date the record was entered into the database.';
 COMMENT ON COLUMN nex.reservednametriage.curation_id IS 'Unique identifier (serial number).';
-
+CREATE INDEX reservednametriage_coll_fk_index ON nex.reservednametriage (colleague_id);
