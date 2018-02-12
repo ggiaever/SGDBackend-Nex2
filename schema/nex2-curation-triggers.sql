@@ -477,7 +477,7 @@ BEGIN
   IF (TG_OP = 'UPDATE') THEN
 
     IF (OLD.proposed_gene_name != NEW.proposed_gene_name) THEN
-        PERFORM nex.insertupdatelog('RESERVEDNAMETRIAGE'::text, 'PROPOSED_GENE_NAME'::text, OLD.curation_id, OLD.proposed_gene_name::text, NEW.proposed_gene_name::text, USER);
+        PERFORM nex.insertupdatelog('RESERVEDNAMETRIAGE'::text, 'PROPOSED_GENE_NAME'::text, OLD.curation_id, OLD.proposed_gene_name, NEW.proposed_gene_name, USER);
     END IF;
 
      IF (OLD.colleague_id != NEW.colleague_id) THEN
