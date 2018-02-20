@@ -7973,25 +7973,6 @@ class Reservedname(Base):
             if curator_session:
                 curator_session.remove()
 
-    def extend(self, username):
-        curator_session = None
-        try:
-            curator_session = get_curator_session(username)
-            self = curator_session.merge(self)
-            old_date = self.expiration_date
-            self.expiration_date = old_date + timedelta(days=180)
-            return_val = self.to_curate_dict()
-            transaction.commit()
-            return return_val
-        except Exception as e:
-            transaction.abort()
-            traceback.print_exc()
-            raise(e)
-        finally:
-            if curator_session:
-                curator_session.remove()
-        
-
 class ReservednameTriage(Base):
     __tablename__ = 'reservednametriage'
     __table_args__ = {u'schema': 'nex'}
