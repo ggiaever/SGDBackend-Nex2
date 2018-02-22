@@ -163,8 +163,7 @@ def load_csv_filedbentities():
     # open ssh connection to download server
     client = paramiko.SSHClient()
     client.load_system_host_keys()
-    default_username = getpass.getuser()
-    username = input('Username [%s]: ' % default_username)
+    username = raw_input('Username for legacy download server: ')
     password =  getpass.getpass('Password for %s@%s: ' % (username, HOSTNAME))
     client.connect(HOSTNAME, 22, username, password, gss_auth=False, gss_kex=False)
     sftp_client = client.open_sftp()
