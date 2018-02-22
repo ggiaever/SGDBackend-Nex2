@@ -61,7 +61,10 @@ def standardize_name(infile, logfile):
         name_desc = pieces[3].replace('"', '')
         if pieces[4]:
             pmid_4_name_desc = int(pieces[4])
-        date_standardized = reformat_date(pieces[5])
+        
+        date_standardized = pieces[5]
+        if "-" not in pieces[5]:
+            date_standardized = reformat_date(pieces[5])
 
         locus_id = name_to_locus_id[orf_name]       
         if pmid_4_gene_name and pmid_4_gene_name not in pmid_to_reference:
