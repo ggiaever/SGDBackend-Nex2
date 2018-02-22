@@ -2056,6 +2056,9 @@ class Filedbentity(Dbentity):
         bucket = conn.get_bucket(S3_BUCKET)
         k = Key(bucket)
         k.key = s3_path
+        # make content-type 'text/plain' if it's a README
+        if self.readme_file_id is None:
+            k.content_type = 'text/plain'        
         k.set_contents_from_file(file, rewind=True)
         k.make_public()
         file_s3 = bucket.get_key(k.key)
@@ -2064,6 +2067,7 @@ class Filedbentity(Dbentity):
         file.seek(0, os.SEEK_END)
         file_size = file.tell()
         file.seek(0)
+
         self.file_size = file_size
         # if md5 checksum matches, save s3 URL to db
         if self.md5sum is None:
