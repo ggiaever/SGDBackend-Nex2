@@ -263,6 +263,21 @@ ALTER TABLE nex.file_keyword ADD CONSTRAINT filekeyword_key_fk FOREIGN KEY (keyw
 ALTER TABLE nex.file_keyword ADD CONSTRAINT filekeyword_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 
+ALTER TABLE nex.complexdbentity ADD CONSTRAINT complexdbentity_fk FOREIGN KEY (dbentity_id) REFERENCES dbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complexdbentity ADD CONSTRAINT complexdbentity_eco_fk FOREIGN KEY (eco_id) REFERENCES eco(eco_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE nex.complex_alias ADD CONSTRAINT complexalias_complex_fk FOREIGN KEY (complex_id) REFERENCES complexdbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complex_alias ADD CONSTRAINT complexalias_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE nex.complex_reference ADD CONSTRAINT complexreference_ref_fk FOREIGN KEY (reference_id) REFERENCES referencedbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complex_reference ADD CONSTRAINT complexreference_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complex_reference ADD CONSTRAINT complexreference_complex_fk FOREIGN KEY (complex_id) REFERENCES complexdbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE nex.complex_go ADD CONSTRAINT complexgo_go_fk FOREIGN KEY (go_id) REFERENCES go(go_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complex_go ADD CONSTRAINT complexgo_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complex_go ADD CONSTRAINT complexgo_complex_fk FOREIGN KEY (complex_id) REFERENCES complexdbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+
 ALTER TABLE nex.book ADD CONSTRAINT book_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE nex.journal ADD CONSTRAINT journal_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
@@ -383,6 +398,12 @@ ALTER TABLE nex.goslim ADD CONSTRAINT goslim_go_fk FOREIGN KEY (go_id) REFERENCE
 ALTER TABLE nex.goslim ADD CONSTRAINT goslim_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 
+ALTER TABLE nex.interactor ADD CONSTRAINT interactor_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.interactor ADD CONSTRAINT interactor_locus_fk FOREIGN KEY (locus_id) REFERENCES locusdbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.interactor ADD CONSTRAINT interactor_type_fk FOREIGN KEY (type_id) REFERENCES psimi(psimi_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.interactor ADD CONSTRAINT interactor_role_fk FOREIGN KEY (role_id) REFERENCES psimi(psimi_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+
 ALTER TABLE nex.phenotype ADD CONSTRAINT phenotype_observable_fk FOREIGN KEY (observable_id) REFERENCES apo(apo_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE nex.phenotype ADD CONSTRAINT phenotype_qualifier_fk FOREIGN KEY (qualifier_id) REFERENCES apo(apo_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE nex.phenotype ADD CONSTRAINT phenotype_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
@@ -409,6 +430,15 @@ ALTER TABLE nex.bindingmotifannotation ADD CONSTRAINT bindingmotifanno_tax_fk FO
 ALTER TABLE nex.bindingmotifannotation ADD CONSTRAINT bindingmotifanno_dbentity_fk FOREIGN KEY (dbentity_id) REFERENCES dbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE nex.bindingmotifannotation ADD CONSTRAINT bindingmotifanno_ref_fk FOREIGN KEY (reference_id) REFERENCES referencedbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE nex.bindingmotifannotation ADD CONSTRAINT bindingmotifanno_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+
+ALTER TABLE nex.complexbindingannotation ADD CONSTRAINT complexbindinganno_ref_fk FOREIGN KEY (reference_id) REFERENCES referencedbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complexbindingannotation ADD CONSTRAINT complexbindinganno_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complexbindingannotation ADD CONSTRAINT complexbindinganno_complex_fk FOREIGN KEY (complex_id) REFERENCES complexdbentity(dbentity_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complexbindingannotation ADD CONSTRAINT complexbindinganno_tax_fk FOREIGN KEY (taxonomy_id) REFERENCES taxonomy(taxonomy_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complexbindingannotation ADD CONSTRAINT complexbindinganno_interactor_fk FOREIGN KEY (interactor_id) REFERENCES interactor(interactor_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complexbindingannotation ADD CONSTRAINT complexbindinganno_bindinteract_fk FOREIGN KEY (binding_interactor_id) REFERENCES interactor(interactor_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE nex.complexbindingannotation ADD CONSTRAINT complexbindinganno_bindtype_fk FOREIGN KEY (binding_type_id) REFERENCES psimi(psimi_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 
 ALTER TABLE nex.diseaseannotation ADD CONSTRAINT diseaseanno_source_fk FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE;
