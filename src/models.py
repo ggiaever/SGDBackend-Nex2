@@ -4201,6 +4201,7 @@ class Diseaseannotation(Base):
     date_assigned = Column(DateTime, nullable=False)
     date_created = Column(DateTime, nullable=False, server_default=text("('now'::text)::timestamp without time zone"))
     created_by = Column(String(12), nullable=False)
+    association_type = Column(ForeignKey(u'nex.ro.ro_id', ondelete=u'CASCADE'), nullable=False, index=True)
 
     dbentity = relationship(u'Dbentity')
     disease = relationship(u'Disease')
@@ -4208,6 +4209,7 @@ class Diseaseannotation(Base):
     reference = relationship(u'Referencedbentity', foreign_keys=[reference_id])
     source = relationship(u'Source')
     taxonomy = relationship(u'Taxonomy')
+    ro = relationship(u'Ro')
 
 
 class Diseasesubset(Base):
