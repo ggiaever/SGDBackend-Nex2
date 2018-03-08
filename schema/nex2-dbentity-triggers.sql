@@ -3311,7 +3311,7 @@ BEGIN
     END IF;
 
     IF (OLD.eco_id != NEW.eco_id) THEN
-        PERFORM nex.insertupdatelog('COMPLEXDBENTITY'::text, 'ECO_ID'::text, OLD.dbentity_id, OLD.eco_id, NEW.eco_id, USER);
+        PERFORM nex.insertupdatelog('COMPLEXDBENTITY'::text, 'ECO_ID'::text, OLD.dbentity_id, OLD.eco_id::text, NEW.eco_id::text, USER);
     END IF;
 
     IF (OLD.description != NEW.description) THEN
