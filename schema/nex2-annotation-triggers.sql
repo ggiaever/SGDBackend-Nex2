@@ -127,8 +127,8 @@ BEGIN
         PERFORM nex.insertupdatelog('COMPLEXBINDINGANNOTATION'::text, 'TAXONOMY_ID'::text, OLD.annotation_id, OLD.taxonomy_id::text, NEW.taxonomy_id::text, USER);
     END IF;
 
-    IF (OLD.reference_id != NEW.reference_id) THEN
-        PERFORM nex.insertupdatelog('COMPLEXBINDINGANNOTATION'::text, 'REFERENCE_ID'::text, OLD.annotation_id, OLD.reference_id::text, NEW.reference_id::text, USER);
+    IF (((OLD.reference_id IS NULL) AND (NEW.reference_id IS NOT NULL)) OR ((OLD.reference_id IS NOT NULL) AND (NEW.reference_id IS NULL)) OR (OLD.reference_id != NEW.reference_id)) THEN
+       PERFORM nex.insertupdatelog('COMPLEXBINDINGANNOTATION'::text, 'REFERENCE_ID'::text, OLD.interactor_id, OLD.reference_id::text, NEW.reference_id::text, USER);
     END IF;
 
     IF (OLD.binding_type_id != NEW.binding_type_id) THEN
@@ -149,7 +149,7 @@ BEGIN
 
     v_row := OLD.annotation_id || '[:]' || OLD.complex_id || '[:]' ||
              OLD.interactor_id || '[:]' || OLD.binding_interactor_id || '[:]' ||
-             OLD.source_id || '[:]' || OLD.reference_id || '[:]' ||
+             OLD.source_id || '[:]' || coalesce(OLD.reference_id,0) || '[:]' ||
              OLD.taxonomy_id || '[:]' || OLD.binding_type_id || '[:]' ||
              coalesce(OLD.range_start_id,0) || '[:]' || coalesce(OLD.range_end,0) || '[:]' ||
              OLD.date_created || '[:]' || OLD.created_by;

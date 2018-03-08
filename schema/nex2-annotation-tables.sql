@@ -46,7 +46,7 @@ CREATE TABLE nex.complexbindingannotation (
     interactor_id bigint NOT NULL,
     binding_interactor_id bigint NOT NULL,
     source_id bigint NOT NULL,
-    reference_id bigint NOT NULL,
+    reference_id bigint,
     taxonomy_id bigint NOT NULL,
     binding_type_id bigint NOT NULL,
     range_start int,
