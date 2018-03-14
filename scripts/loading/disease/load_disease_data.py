@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
 from scripts.loading.reference.promote_reference_triage import add_paper
 from zope.sqlalchemy import ZopeTransactionExtension
-#from database_session import get_nex_session as get_session
+
 import transaction
 import traceback
 import sys
@@ -24,7 +24,6 @@ ANNOTATION_TYPE = 'manually curated'
 GROUP_ID = 1
 OBJ_URL = 'http://www.alliancegenome.org/gene/'
 EVIDENCE_TYPE = 'with'
-RO_ID = 1942926
 
 logging.basicConfig(level=logging.INFO)
 
@@ -38,28 +37,18 @@ def upload_db(obj, row_num):
         temp_engine = create_engine(NEX2_URI)
         session_factory = sessionmaker(bind=temp_engine, extension=ZopeTransactionExtension(), expire_on_commit=False)
         db_session = scoped_session(session_factory)
-        # see if already exists, if not create
-        # add checks using unique key criteria
+
         disease_id = db_session.query(Disease.disease_id).filter(Disease.doid == obj['doid']).one_or_none()[0]
         if disease_id:
             try:
                 tax_id = db_session.query(Taxonomy.taxonomy_id).filter(Taxonomy.taxid==obj['taxon']).one_or_none()[0]
                 ref_id = db_session.query(Referencedbentity.dbentity_id).filter(Referencedbentity.pmid == obj['pmid']).one_or_none()
-                print ref_id
                 if ref_id is None:
-                    print 'in reference id is none'
-                    import pdb
-                    pdb.set_trace()
                     ref = add_paper(obj['pmid'], CREATED_BY)
-                    print ref
-                    print ref[0]
                     ref_id = ref[0]
-                    print ref_id
-                #ro_id = db_session.query(Ro.ro_id).filter(Ro.display_name == obj['association']).one_or_none()[0]
+                ro_id = db_session.query(Ro.ro_id).filter(Ro.display_name == obj['association']).one_or_none()[0]
                 dbentity_id = db_session.query(Dbentity.dbentity_id).filter(Dbentity.sgdid == obj['sgdid']).one_or_none()[0]
                 source_id = db_session.query(Source.source_id).filter(Source.display_name == obj['source']).one_or_none()[0]
-                annotation_id = db_session.query(Diseaseannotation.annotation_id).filter(Diseaseannotation.disease_id == disease_id).one_or_none()
-                #disease_ref_id = db_session.query(Diseaseannotation.reference_id).filter(Diseaseannotation.reference_id == obj['pmid']).one_or_none()
             except TypeError:
                 logging.error('invalid ids ' + str(row_num) +  ' ' + str(disease_id) + ' ' + str(tax_id) + '  '+ str(ref_id) +'  '+ str(dbentity_id))
                 return
@@ -68,6 +57,9 @@ def upload_db(obj, row_num):
                 for code in codes:
                     code = code.strip()
                     eco_id = db_session.query(EcoAlias.eco_id).filter(EcoAlias.display_name == code).one_or_none()[0]
+                    annotation_id = db_session.query(Diseaseannotation.annotation_id).filter(and_(Diseaseannotation.disease_id == disease_id,
+                                                                                                  Diseaseannotation.eco_id == eco_id, Diseaseannotation.reference_id == ref_id,
+                                                                                                  Diseaseannotation.dbentity_id == dbentity_id)).one_or_none()
                     if eco_id:
                         if not annotation_id :
                             new_daf_row = Diseaseannotation(
@@ -78,7 +70,7 @@ def upload_db(obj, row_num):
                                 disease_id=disease_id,
                                 eco_id=eco_id,
                                 annotation_type=ANNOTATION_TYPE,
-                                association_type=RO_ID,
+                                association_type=ro_id,
                                 created_by=CREATED_BY,
                                 date_assigned=obj['date_assigned']
                             )
@@ -86,22 +78,23 @@ def upload_db(obj, row_num):
                             transaction.commit()
                             db_session.flush()
                             annotation_id = new_daf_row.annotation_id
-                        #else:
-                        #    annotation_id = annotation_id[0]
-                # daf_evidence_row = Diseasesupportingevidence(
-                #     annotation_id=annotation_id,
-                #     group_id = GROUP_ID,
-                #     dbxref_id=obj['hgnc'],
-                #     obj_url=OBJ_URL+obj['hgnc'],
-                #     evidence_type = 'with',
-                #     created_by=CREATED_BY
-                # )
-                #db_session.add(daf_evidence_row)
-                #transaction.commit()
-                #db_session.flush()
+                        else:
+                            annotation_id = annotation_id
+
+                        daf_evidence_row = Diseasesupportingevidence(
+                            annotation_id=annotation_id,
+                            group_id = GROUP_ID,
+                            dbxref_id=obj['hgnc'],
+                            obj_url=OBJ_URL+obj['hgnc'],
+                            evidence_type = 'with',
+                            created_by=CREATED_BY
+                        )
+                    db_session.add(daf_evidence_row)
+                    transaction.commit()
+                    db_session.flush()
         logging.info('finished ' + obj['sgdid'] + ', line ' + str(row_num))
     except:
-        logging.error('error with ' + obj['sgdid']+ ' in row ' + str(row_num))
+        logging.error('error with ' + obj['sgdid']+ ' in row ' + str(row_num) + ' ' +obj['doid'] + ' ' + obj['pmid'] )
         traceback.print_exc()
         db_session.rollback()
         db_session.close()
