@@ -22,7 +22,7 @@ NEX2_URI = os.environ.get('NEX2_URI')
 CREATED_BY = os.environ.get('CREATED_BY')
 ANNOTATION_TYPE = 'manually curated'
 GROUP_ID = 1
-OBJ_URL = 'http://www.alliancegenome.org/gene/'
+OBJ_URL = 'https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id='
 EVIDENCE_TYPE = 'with'
 
 logging.basicConfig(level=logging.INFO)
