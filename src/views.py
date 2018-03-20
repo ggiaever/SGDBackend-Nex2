@@ -498,6 +498,15 @@ def locus_tabs(request):
     else:
         return HTTPNotFound()
 
+@view_config(route_name='locus_graph', renderer='json', request_method='GET')
+def locus_graph(request):
+    id = extract_id_request(request, 'locus')
+    locus = get_locus_by_id(id)
+    if locus:
+        return locus.graph()
+    else:
+        return HTTPNotFound()
+
 @view_config(route_name='locus_phenotype_details', renderer='json', request_method='GET')
 def locus_phenotype_details(request):
     id = extract_id_request(request, 'locus')

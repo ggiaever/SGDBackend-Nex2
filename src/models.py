@@ -2443,6 +2443,18 @@ class Locusdbentity(Dbentity):
 
         return obj
 
+    def graph(self):
+        go_graph = self.go_graph()
+        regulation_graph = self.regulation_graph()
+        combined_nodes = go_graph['nodes'] + regulation_graph['nodes']
+        # make unique dicts
+        combined_nodes = {v['id']:v for v in combined_nodes}.values()
+        combined_edges = go_graph['edges'] + regulation_graph['edges']
+        return {
+            'nodes': combined_nodes,
+            'edges': combined_edges
+        }
+
     def expression_to_dict(self):
         expression_annotations = DBSession.query(Expressionannotation).filter_by(dbentity_id=self.dbentity_id).all()
 

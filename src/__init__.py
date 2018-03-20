@@ -57,6 +57,7 @@ def main(global_config, **settings):
 
     config.add_route('locus', '/locus/{sgdid}', request_method='GET')
     config.add_route('locus_tabs', '/locus/{id}/tabs', request_method='GET')
+    config.add_route('locus_graph', '/locus/{id}/graph', request_method='GET')
     config.add_route('locus_phenotype_details', '/locus/{id}/phenotype_details', request_method='GET')
     config.add_route('locus_phenotype_graph', '/locus/{id}/phenotype_graph', request_method='GET')
     config.add_route('locus_literature_details', '/locus/{id}/literature_details', request_method='GET')
