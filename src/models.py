@@ -2761,13 +2761,10 @@ class Locusdbentity(Dbentity):
         edges_added = set([])
 
         nodes[self.format_name] = {
-            "data": {
-                "name": self.display_name.replace("_", " "),
-                "id": self.format_name,
-                "link": self.obj_url,
-                "type": "BIOENTITY",
-                "category": "FOCUS"
-            }
+            "name": self.display_name.replace("_", " "),
+            "id": self.format_name,
+            "link": self.obj_url,
+            "category": "FOCUS"
         }
 
         min_cutoff = 99999999
@@ -2787,50 +2784,41 @@ class Locusdbentity(Dbentity):
 
             if dbentity[1] not in nodes:
                 nodes[dbentity[1]] = {
-                    "data": {
-                        "name": dbentity[0],
-                        "id": dbentity[1],
-                        "link": dbentity[2],
-                        "type": "BIOENTITY",
-                        "gene_count": len(go_ids)
-                    }
+                    "name": dbentity[0],
+                    "id": dbentity[1],
+                    "link": dbentity[2],
+                    "category": "locus",
+                    "gene_count": len(go_ids)
                 }
 
             for go_id in go_ids:
                 go = DBSession.query(Go).filter_by(go_id=go_id).one_or_none()
-
                 if go.format_name not in nodes:
                     nodes[go.format_name] = {
-                        "data": {
-                            "name": go.display_name.replace("_", " "),
-                            "id": go.format_name,
-                            "link": go.obj_url,
-                            "type": "GO",
-                            "gene_count": len(go_ids)
-                        }
+                        "name": go.display_name.replace("_", " "),
+                        "id": go.format_name,
+                        "link": go.obj_url,
+                        "category": go.go_namespace,
+                        "gene_count": len(go_ids)
                     }
 
                 if (go.format_name + " " + dbentity[1]) not in edges_added:
                     edges.append({
-                        "data": {
-                            "source": go.format_name,
-                            "target": dbentity[1]
-                        }
+                        "source": go.format_name,
+                        "target": dbentity[1]
                     })
                     edges_added.add(go.format_name + " " + dbentity[1])
 
                 if (go.format_name + " " + self.format_name) not in edges_added:
                     edges.append({
-                        "data": {
-                            "source": go.format_name,
-                            "target": self.format_name
-                        }
+                        "source": go.format_name,
+                        "target": self.format_name
                     })
                     edges_added.add(go.format_name + " " + self.format_name)
 
             i += 1
 
-        nodes[self.format_name]["data"]["gene_count"] = max_cutoff
+        nodes[self.format_name]["gene_count"] = max_cutoff
 
         if len(list_genes_to_go) == 0:
             min_cutoff = max_cutoff
