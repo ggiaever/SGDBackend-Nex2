@@ -2449,6 +2449,8 @@ class Locusdbentity(Dbentity):
         combined_nodes = go_graph['nodes'] + regulation_graph['nodes']
         # make unique dicts
         combined_nodes = {v['id']:v for v in combined_nodes}.values()
+        # sort so focus is first
+        combined_nodes = sorted(combined_nodes, key=lambda k: (k['category'] != 'FOCUS')) 
         combined_edges = go_graph['edges'] + regulation_graph['edges']
         return {
             'nodes': combined_nodes,
