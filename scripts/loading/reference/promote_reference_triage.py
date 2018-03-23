@@ -191,6 +191,9 @@ def insert_referencedbentity(pmid, source_id, record, created_by):
         publication_status = epub_status
         fulltext_status = epub_pdf_status
 
+    # if pmid == 19279404:
+    #    year = 2009
+
     x = Referencedbentity(display_name = citation.split(')')[0] + ')',
                           source_id = source_id,
                           subclass = 'REFERENCE',
