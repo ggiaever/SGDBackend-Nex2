@@ -3335,7 +3335,7 @@ BEGIN
 
         v_row := OLD.dbentity_id || '[:]' ||  OLD.intact_id || '[:]' ||
                  OLD.systematic_name || '[:]' ||  OLD.eco_id || '[:]' ||
-                 OLD.description || '[:]' ||  coalese(OLD.properties,'');
+                 OLD.description || '[:]' ||  coalesce(OLD.properties,'');
 
         PERFORM nex.insertdeletelog('COMPLEXDBENTITY'::text, OLD.dbentity_id, v_row, USER);
 
