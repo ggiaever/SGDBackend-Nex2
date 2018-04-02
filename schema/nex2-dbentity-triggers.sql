@@ -3302,6 +3302,10 @@ DECLARE
 BEGIN
   IF (TG_OP = 'UPDATE') THEN
 
+    IF (OLD.complex_accession != NEW.complex_accession) THEN
+        PERFORM nex.insertupdatelog('COMPLEXDBENTITY'::text, 'COMPLEX_ACCESSION'::text, OLD.dbentity_id, OLD.complex_accession, NEW.complex_accession, USER);
+    END IF;
+
     IF (OLD.intact_id != NEW.intact_id) THEN
         PERFORM nex.insertupdatelog('COMPLEXDBENTITY'::text, 'INTACT_ID'::text, OLD.dbentity_id, OLD.intact_id, NEW.intact_id, USER);
     END IF;
@@ -3333,7 +3337,8 @@ BEGIN
         UPDATE nex.sgdid SET sgdid_status = 'Deleted'
         WHERE display_name = v_sgdid;
 
-        v_row := OLD.dbentity_id || '[:]' ||  OLD.intact_id || '[:]' ||
+        v_row := OLD.dbentity_id || '[:]' || OLD.complex_accession || '[:]' ||  
+                 OLD.intact_id || '[:]' ||
                  OLD.systematic_name || '[:]' ||  OLD.eco_id || '[:]' ||
                  OLD.description || '[:]' ||  coalesce(OLD.properties,'');
 
