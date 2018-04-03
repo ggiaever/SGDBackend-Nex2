@@ -2144,7 +2144,7 @@ BEGIN
        PERFORM nex.insertupdatelog('INTERACTOR'::text, 'DISPLAY_NAME'::text, OLD.interactor_id, OLD.display_name, NEW.display_name, USER);
     END IF;
 
-    IF (OLD.obj_url != NEW.obj_url) THEN
+    IF (((OLD.obj_url IS NULL) AND (NEW.obj_url IS NOT NULL)) OR ((OLD.obj_url IS NOT NULL) AND (NEW.obj_url IS NULL)) OR (OLD.obj_url != NEW.obj_url)) THEN
        PERFORM nex.insertupdatelog('INTERACTOR'::text, 'OBJ_URL'::text, OLD.interactor_id, OLD.obj_url, NEW.obj_url, USER);
     END IF;
 
@@ -2160,7 +2160,7 @@ BEGIN
        PERFORM nex.insertupdatelog('INTERACTOR'::text, 'LOCUS_ID'::text, OLD.interactor_id, OLD.locus_id::text, NEW.locus_id::text, USER);
     END IF;
 
-    IF (OLD.description != NEW.description) THEN
+    IF (((OLD.description IS NULL) AND (NEW.description IS NOT NULL)) OR ((OLD.description IS NOT NULL) AND (NEW.description IS NULL)) OR (OLD.description != NEW.description)) THEN
        PERFORM nex.insertupdatelog('INTERACTOR'::text, 'DESCRIPTION'::text, OLD.interactor_id, OLD.description, NEW.description, USER);
     END IF;
 
@@ -2176,8 +2176,8 @@ BEGIN
        PERFORM nex.insertupdatelog('INTERACTOR'::text, 'STOICHIOMETRY'::text, OLD.interactor_id, OLD.stoichiometry::text, NEW.stoichiometry::text, USER);
     END IF;
 
-    IF (OLD.protein_residues != NEW.protein_residues) THEN
-       PERFORM nex.insertupdatelog('INTERACTOR'::text, 'PROTEIN_RESIDUES'::text, OLD.interactor_id, OLD.protein_residues, NEW.protein_residues, USER);
+    IF (((OLD.residues IS NULL) AND (NEW.residues IS NOT NULL)) OR ((OLD.residues IS NOT NULL) AND (NEW.residues IS NULL)) OR (OLD.residues != NEW.residues)) THEN
+       PERFORM nex.insertupdatelog('INTERACTOR'::text, 'RESIDUES'::text, OLD.interactor_id, OLD.residues, NEW.residues, USER);
     END IF;
 
     RETURN NEW;
@@ -2185,11 +2185,11 @@ BEGIN
   ELSIF (TG_OP = 'DELETE') THEN
 
     v_row := OLD.interactor_id || '[:]' || OLD.format_name || '[:]' ||
-             OLD.display_name || '[:]' || OLD.obj_url || '[:]' ||
+             OLD.display_name || '[:]' || coalesce(OLD.obj_url,'') || '[:]' ||
              OLD.source_id || '[:]' || OLD.intact_id || '[:]' ||
-             coalesce(OLD.locus_id,0) || '[:]' || OLD.description || '[:]' ||
+             coalesce(OLD.locus_id,0) || '[:]' || coalesce(OLD.description,'') || '[:]' ||
              OLD.type_id || '[:]' || OLD.role_id || '[:]' ||
-             coalesce(OLD.stoichiometry,0) || '[:]' || OLD.protein_residues || '[:]' ||
+             coalesce(OLD.stoichiometry,0) || '[:]' || coalesce(OLD.residues,'') || '[:]' ||
              OLD.date_created || '[:]' || OLD.created_by;
 
             PERFORM nex.insertdeletelog('INTERACTOR'::text, OLD.interactor_id, v_row, USER);
