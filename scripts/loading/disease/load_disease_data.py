@@ -22,7 +22,7 @@ NEX2_URI = os.environ.get('NEX2_URI')
 CREATED_BY = os.environ.get('CREATED_BY')
 ANNOTATION_TYPE = 'manually curated'
 GROUP_ID = 1
-OBJ_URL = 'https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id='
+OBJ_URL = 'http://www.alliancegenome.org/gene/'
 EVIDENCE_TYPE = 'with'
 
 logging.basicConfig(level=logging.INFO)
@@ -37,7 +37,6 @@ def upload_db(obj, row_num):
         temp_engine = create_engine(NEX2_URI)
         session_factory = sessionmaker(bind=temp_engine, extension=ZopeTransactionExtension(), expire_on_commit=False)
         db_session = scoped_session(session_factory)
-
         disease_id = db_session.query(Disease.disease_id).filter(Disease.doid == obj['doid']).one_or_none()[0]
         if disease_id:
             try:
@@ -46,6 +45,7 @@ def upload_db(obj, row_num):
                 if ref_id is None:
                     ref = add_paper(obj['pmid'], CREATED_BY)
                     ref_id = ref[0]
+                    logging.info('PMID added' + ref_id)
                 ro_id = db_session.query(Ro.ro_id).filter(Ro.display_name == obj['association']).one_or_none()[0]
                 dbentity_id = db_session.query(Dbentity.dbentity_id).filter(Dbentity.sgdid == obj['sgdid']).one_or_none()[0]
                 source_id = db_session.query(Source.source_id).filter(Source.display_name == obj['source']).one_or_none()[0]
