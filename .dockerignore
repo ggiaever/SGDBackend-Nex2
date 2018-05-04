@@ -1,0 +1,12 @@
+.cache
+config
+docs
+lib
+node_modules
+scripts
+system_config
+.gitignore
+*.sh
+*.md
+*.rdb
+*.env

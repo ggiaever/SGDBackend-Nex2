@@ -1,0 +1,24 @@
+version: '3'
+services:
+  sgdb:
+    env_file:
+    - sgdb.env
+    build: .
+    image: "sgdb:18.5.1"
+    depends_on:
+    - redis
+    command: ["pserve","sgdbackend_development.ini", "--reload"]
+    volumes:
+    - .:/app
+    ports:
+    - "6543:6543"
+
+  redis:
+    env_file:
+      - redis.env
+    image: redis:3.2
+    command: ["python scripts/disambiguation/index_disambiguation.py"]
+  
+
+
+    

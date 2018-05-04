@@ -74,3 +74,11 @@ upload-expression-details:
 
 load-triage:
 	source dev_variables.sh && python scripts/loading/load_reference_triage.py
+
+start-sgdb:
+	docker-compose up
+
+stop-sgdb:
+	docker-compose down -v
+prune:
+	docker system prune -a
