@@ -19,6 +19,7 @@ class CurateLayout extends Component {
 {/*            <li><Link className={(location === '/colleagues/triage') ? style.activeLink : null} to='/colleagues/triage'><span><i className='fa fa-users' /> Colleague Updates</span></Link></li>
             <li><Link className={(location.match('/reservations')) ? style.activeLink : null} to='/reservations'><span><i className='fa fa-sticky-note' /> Gene Name Reservations</span></Link></li>
 */}            <li><Link className={(location === '/spreadsheet_upload') ? style.activeLink : null} to='/spreadsheet_upload'><span><i className='fa fa-upload' /> Spreadsheet Upload</span></Link></li>
+            <li><Link className={(location === '/file') ? style.activeLink : null} to='/file'><span><i className='fa fa-file' /> Files</span></Link></li>
             <li><Link className={(location === '/settings') ? style.activeLink : null} to='/settings'><span><i className='fa fa-cog' /> Settings</span></Link></li>
             <li><Link className={(location === '/curate/reference/new') ? style.activeLink : null} to='/curate/reference/new'><span><i className='fa fa-plus' /> Add References</span></Link></li>
           </ul>

@@ -36,6 +36,7 @@ import ColleaguesShow from './containers/colleagues/show';
 // import AuthorResponse from './containers/authorResponse/index';
 import NewColleague from './containers/colleagues/new';
 // import EditColleague from './containers/colleagues/edit';
+import FileCurate from './containers/fileCurate/index';
 
 
 export default (
@@ -55,6 +56,7 @@ export default (
       <Route component={requireAuthentication(Search)} path='search' />
       <Route component={PublicHome} path='login' />
       <Route component={GoogleLogin} path='google_login' />
+      <Route component={requireAuthentication(FileCurate)} path='file' />
 {/*      <Route component={requireAuthentication(LocusLayout)} path='curate/locus/:id'>
         <IndexRoute component={requireAuthentication(LocusBasic)} />
         <Route component={requireAuthentication(LocusName)} path='gene_name' />
@@ -69,6 +71,7 @@ export default (
         <Route component={requireAuthentication(Blank)} path='datasets' />
         <Route component={requireAuthentication(Blank)} path='regulation' />
         <Route component={requireAuthentication(Blank)} path='interaction' />
+        
       </Route>
     </Route>
     <Route component={PublicLayout}>
